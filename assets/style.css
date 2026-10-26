@@ -561,10 +561,48 @@ button { font-family: inherit; cursor: pointer; }
 .board--new .board__head h3 { color: var(--green); }
 .board__more { padding: 9px 0 0; font-size: 11px; color: var(--ink-3); line-height: 1.5; }
 
+/* 日期回溯：往回看那几天 */
+.daynav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+.daynav__label { color: var(--ink-3); }
+.daychip {
+  color: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.12s, color 0.12s, background 0.12s;
+}
+.daychip:hover { border-color: var(--blue); color: var(--blue); }
+.daychip.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+.daynav__step {
+  color: var(--blue);
+  border-bottom: 1px solid rgba(11, 107, 203, 0.25);
+  padding-bottom: 1px;
+}
+.daynav__step:hover { border-bottom-color: var(--blue); }
+.daynav__step.off { color: var(--ink-3); border-bottom: 0; padding-bottom: 0; }
+.daynav__home {
+  color: var(--ink);
+  background: var(--soft);
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+.daynav__home:hover { background: var(--line-2); }
+
 /* 移动端覆盖放在最后：delta 与 item__meta 的样式在文件末尾定义，媒体查询必须排它们后面才生效 */
 @media (max-width: 620px) {
   .delta { font-size: 12.5px; padding: 9px 11px; }
   .delta__btn { margin-left: 6px; }
   .item__meta { flex-wrap: wrap; row-gap: 3px; }
   .board--new { margin-left: -18px; padding-left: 12px; }
+  .daynav { gap: 6px; margin-top: 10px; }
+  .daychip { padding: 2px 8px; }
 }

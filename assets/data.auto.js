@@ -1,9 +1,10 @@
 // 由 pipeline/fetch.mjs 生成、pipeline/enrich.mjs 补中文，请勿手改
-// 更新时间 2026-10-26T05:41:47.901Z
+// 更新时间 2026-10-26T06:00:57.992Z
 window.GH_DATA_AUTO = {
-  "snapshot": "2026-10-26T05:41:47.760Z",
+  "snapshot": "2026-10-26T06:00:57.863Z",
   "dateLabel": "2026年10月26日 星期一",
   "auto": true,
+  "vs": "2026-10-23",
   "items": [
     {
       "id": "morluto-rea",

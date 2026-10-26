@@ -24,20 +24,67 @@ const LANG_COLOR = {
    浏览器不会重新加载，点了就像没反应。 */
 const HAS_AUTO = !!window.GH_DATA_AUTO;
 const USE_AUTO = HAS_AUTO && !/[?&]auto=0\b/.test(location.search);
-const DATA = USE_AUTO ? window.GH_DATA_AUTO : window.GH_DATA;
+const BASE_DATA = USE_AUTO ? window.GH_DATA_AUTO : window.GH_DATA;
 
-const ITEMS = DATA.items.map(function (it) {
-  it.heat = (it.today || 0) + (it.week || 0) / 7 + (it.estimate || 0) * 0.2;
-  return it;
-});
-const BY_ID = {};
-ITEMS.forEach(function (it) { BY_ID[it.id] = it; });
+/* 历史归档：每天一份完整榜单（boards + history + 元数据合成），见 pipeline/archive.mjs */
+const ARCHIVE = window.GH_ARCHIVE || null;
 
-const SORTED = ITEMS.slice().sort(function (a, b) {
-  // 有真实榜位就按榜位排，保证序号和名次一致
-  if (a.rank != null && b.rank != null) return a.rank - b.rank;
-  return b.heat - a.heat;
-});
+/* 当前正在看的数据。首页 / 历史日 会换掉它，所以要能重算。 */
+let DATA = null;
+let ITEMS = [];
+let BY_ID = {};
+let SORTED = [];
+let IS_ARCHIVE = false;
+let ARCHIVE_DAY = null;
+
+function applyData(d) {
+  DATA = d;
+  ITEMS = DATA.items.map(function (it) {
+    if (it.heat == null) {
+      it.heat = (it.today || 0) + (it.week || 0) / 7 + (it.estimate || 0) * 0.2;
+    }
+    return it;
+  });
+  BY_ID = {};
+  ITEMS.forEach(function (it) { BY_ID[it.id] = it; });
+  SORTED = ITEMS.slice().sort(function (a, b) {
+    // 有真实榜位就按榜位排，保证序号和名次一致
+    if (a.rank != null && b.rank != null) return a.rank - b.rank;
+    return b.heat - a.heat;
+  });
+}
+
+/* 把归档里某一天拼成和 data.auto.js 同构的对象，后面的渲染逻辑不用改 */
+function buildDay(date) {
+  if (!ARCHIVE) return null;
+  const day = ARCHIVE.days.filter(function (d) { return d.date === date; })[0];
+  if (!day) return null;
+  const items = day.entries.map(function (e) {
+    const m = ARCHIVE.meta[e.id] || {};
+    const it = {};
+    for (const k in m) it[k] = m[k];
+    it.id = e.id;
+    it.rank = e.rank;
+    it.stars = e.stars;
+    it.today = e.today;
+    it.week = e.week;
+    it.estimate = e.estimate;
+    it.prevRank = e.prevRank;
+    it.rankDelta = e.rankDelta;
+    it.newToBoard = e.newToBoard;
+    it.streak = e.streak;
+    it.zh = !!m.desc;
+    return it;
+  });
+  return {
+    snapshot: day.date,
+    dateLabel: day.label,
+    auto: true,
+    archive: true,
+    vs: day.vs,
+    items: items,
+  };
+}
 
 /* ---------- 工具 ---------- */
 function esc(s) {
@@ -343,6 +390,26 @@ function renderAbout() {
 }
 
 /* ---------- 首页整页 ---------- */
+function shortDate(d) {
+  const p = String(d).split("-");
+  return Number(p[1]) + "月" + Number(p[2]) + "日";
+}
+
+/* 对比的是哪一天。中间断过档（比如休假那几天没跑）就如实说出来，别假装是「昨天」 */
+function vsLabel() {
+  const vs = DATA && DATA.vs;
+  if (!vs) return "对比上一次";
+  let extra = "";
+  const cur = DATA.snapshot ? String(DATA.snapshot).slice(0, 10) : null;
+  if (cur) {
+    const gap = Math.round(
+      (new Date(cur + "T00:00:00Z") - new Date(vs + "T00:00:00Z")) / 86400000
+    );
+    if (gap > 1) extra = "（中间空了 " + (gap - 1) + " 天）";
+  }
+  return "对比 " + shortDate(vs) + extra;
+}
+
 function deltaHTML() {
   if (!USE_AUTO) return "";
   if (!ITEMS.some(function (i) { return i.newToBoard != null; })) return "";
@@ -351,14 +418,44 @@ function deltaHTML() {
   const down = ITEMS.filter(function (i) { return i.rankDelta < 0; }).length;
   const stay = ITEMS.length - n;
   if (!n && !up && !down) {
-    return '<div class="delta">和昨天榜单一样，没有项目进出。<span class="bar"></span></div>';
+    return '<div class="delta">' + vsLabel() + "：榜单没变，没有项目进出。<span class=\"bar\"></span></div>";
   }
   return '<div class="delta">' +
-    "对比昨天：<b>" + n + "</b> 个新上榜，" + stay + " 个还在榜" +
+    vsLabel() + "：<b>" + n + "</b> 个新上榜，" + stay + " 个还在榜" +
     (up ? '，<b class="up">' + up + "</b> 个名次上升" : "") +
     (down ? '，<b class="down">' + down + "</b> 个下滑" : "") +
     (n ? '<button class="delta__btn" data-cat="new">只看新进 →</button>' : "") +
     '<span class="bar"></span></div>';
+}
+
+/* 日期切换：看历史时给前后天和「回到最新」，看最新时列最近几天 */
+function dateNavHTML() {
+  if (!USE_AUTO) return "";   // 手写存档是固定 40 条，跟日期无关，不显示
+  if (!ARCHIVE || !ARCHIVE.days || !ARCHIVE.days.length) return "";
+  const days = ARCHIVE.days;
+
+  if (IS_ARCHIVE) {
+    const idx = days.map(function (d) { return d.date; }).indexOf(ARCHIVE_DAY);
+    const prev = idx > 0 ? days[idx - 1] : null;
+    const next = idx >= 0 && idx < days.length - 1 ? days[idx + 1] : null;
+    return '<div class="daynav">' +
+      (prev
+        ? '<a class="daynav__step" href="#/d/' + prev.date + '">← ' + shortDate(prev.date) + "</a>"
+        : '<span class="daynav__step off">已是最早</span>') +
+      '<a class="daynav__home" href="#/">回到最新</a>' +
+      (next
+        ? '<a class="daynav__step" href="#/d/' + next.date + '">' + shortDate(next.date) + " →</a>"
+        : '<span class="daynav__step off">已是最新</span>') +
+      "</div>";
+  }
+
+  const hist = days.slice(0, -1).slice(-7).reverse();
+  if (!hist.length) return "";
+  return '<div class="daynav"><span class="daynav__label">往回看</span>' +
+    hist.map(function (d) {
+      return '<a class="daychip" href="#/d/' + d.date + '">' + shortDate(d.date) + "</a>";
+    }).join("") +
+    "</div>";
 }
 
 function renderHome() {
@@ -368,13 +465,14 @@ function renderHome() {
       "<p>不列仓库名，也不给一堆数字让你自己判断。每条都说清楚它是干什么的、为什么今天值得你看一眼。</p>" +
       '<div class="dateline"><span class="nodot">' + DATA.dateLabel + '</span><span>·</span><span id="count">' +
       ITEMS.length + " 个项目</span><span>·</span><span>" +
-      (USE_AUTO ? "自动抓取" : "手写存档") + "</span>" +
-      (HAS_AUTO
+      (IS_ARCHIVE ? "历史榜单" : USE_AUTO ? "自动抓取" : "手写存档") + "</span>" +
+      (!IS_ARCHIVE && HAS_AUTO
         ? '<a class="switch" href="' + (USE_AUTO ? "?auto=0" : "?auto=1") + '#/" title="' +
           (USE_AUTO ? "切到 40 条手写精选存档" : "回到今天自动抓取的完整清单") + '">' +
           (USE_AUTO ? "手写精选 40 条 →" : "← 今日自动版") + "</a>"
         : "") +
       '<span class="bar"></span></div>' +
+      dateNavHTML() +
       deltaHTML() +
     "</div>" +
     '<div class="filters"><div class="filters__in wrap">' +
@@ -411,16 +509,57 @@ function renderHome() {
 }
 
 /* ---------- 路由 ---------- */
+function updateFooter() {
+  const foot = document.getElementById("footNote");
+  if (!foot) return;
+  foot.textContent =
+    "githubhot · 数据 " + (DATA.dateLabel || "—") +
+    (IS_ARCHIVE
+      ? " · 历史榜单，看的是归档"
+      : USE_AUTO
+        ? " · 双击「更新.bat」刷新到最新"
+        : " · 手写存档，固定不变");
+}
+
 function route() {
   const h = location.hash || "#/";
-  const m = h.match(/^#\/p\/(.+)$/);
+  const dm = h.match(/^#\/d\/(\d{4}-\d{2}-\d{2})$/);
+  const pm = h.match(/^#\/p\/(.+)$/);
+
   document.querySelectorAll(".nav a").forEach(function (a) {
     a.classList.remove("on");
-    if (a.getAttribute("href") === (m ? "" : h)) a.classList.add("on");
+    if (a.getAttribute("href") === (pm ? "" : h)) a.classList.add("on");
   });
-  if (m) renderDetail(m[1]);
-  else if (h === "#/about") renderAbout();
+
+  /* 历史某一天：#/d/2026-10-23 */
+  if (dm) {
+    const day = buildDay(dm[1]);
+    if (day) {
+      IS_ARCHIVE = true;
+      ARCHIVE_DAY = dm[1];
+      applyData(day);
+      renderHome();
+      updateFooter();
+      window.scrollTo(0, 0);
+      return;
+    }
+    location.hash = "#/";   // 没有这一天，回首页
+    return;
+  }
+
+  /* 详情页：沿用当前这份数据，从历史页点进来就还是历史那天的条目 */
+  if (pm) {
+    renderDetail(pm[1]);
+    return;
+  }
+
+  IS_ARCHIVE = false;
+  ARCHIVE_DAY = null;
+  applyData(BASE_DATA);
+
+  if (h === "#/about") renderAbout();
   else renderHome();
+  updateFooter();
 }
 
 document.addEventListener("keydown", function (e) {
@@ -430,14 +569,7 @@ document.addEventListener("keydown", function (e) {
   }
 });
 
+/* 先铺一份数据，保证直接进 #/p/xxx 时 BY_ID 不是空的 */
+applyData(BASE_DATA);
 window.addEventListener("hashchange", route);
 route();
-
-/* 页脚日期跟着当前数据走，别写死在 HTML 里 */
-(function () {
-  const foot = document.getElementById("footNote");
-  if (!foot) return;
-  foot.textContent =
-    "githubhot · 数据 " + (DATA.dateLabel || "—") +
-    (USE_AUTO ? " · 双击「更新.bat」刷新到最新" : " · 手写存档，固定不变");
-})();

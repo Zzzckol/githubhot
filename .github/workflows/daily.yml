@@ -71,13 +71,17 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || steps.check.outputs.skip != 'true'
         run: node pipeline/stamp.mjs
 
+      - name: 生成历史归档（往回看每天）
+        if: github.event_name == 'workflow_dispatch' || steps.check.outputs.skip != 'true'
+        run: node pipeline/archive.mjs
+
       - name: 提交结果
         if: github.event_name == 'workflow_dispatch' || steps.check.outputs.skip != 'true'
         run: |
           git config user.name "githubhot-bot"
           git config user.email "githubhot-bot@users.noreply.github.com"
           # boards/ 必须提交，不然下次跑没有「昨天的榜」可比，名次变化和连续在榜全废
-          git add assets/data.auto.js pipeline/history.json pipeline/boards index.html
+          git add assets/data.auto.js assets/data.archive.js pipeline/history.json pipeline/boards pipeline/meta.json index.html
           if git diff --staged --quiet; then
             echo "今天数据没变化，不提交"
           else

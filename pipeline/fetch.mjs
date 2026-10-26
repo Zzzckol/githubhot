@@ -58,9 +58,18 @@ function loadBoards(beforeDate) {
     .sort((a, b) => (a.d < b.d ? 1 : -1));
 }
 
-function saveBoard(date, ids) {
+/* 每日榜单存档：ids 是排名顺序，repos 是 id → 仓库全名。
+   存 repos 是为了日后回看历史时能从 history.json 里查到那天的星数
+   （老存档没有这个字段，归档脚本按 id 反推兜底）。 */
+function saveBoard(date, items) {
   fs.mkdirSync(BOARDS, { recursive: true });
-  fs.writeFileSync(path.join(BOARDS, date + ".json"), JSON.stringify({ date, ids }, null, 1), "utf8");
+  const repos = {};
+  for (const it of items) repos[it.id] = it.repo;
+  fs.writeFileSync(
+    path.join(BOARDS, date + ".json"),
+    JSON.stringify({ date, ids: items.map((i) => i.id), repos }, null, 1),
+    "utf8"
+  );
 }
 const TOKEN = process.env.GITHUB_TOKEN || "";
 
@@ -340,7 +349,18 @@ async function main() {
     "// 由 pipeline/fetch.mjs 自动生成，请勿手改\n" +
     `// 生成时间 ${now.toISOString()}\n` +
     `window.${VAR} = ` +
-    JSON.stringify({ snapshot: now.toISOString(), dateLabel, auto: true, items }, null, 2) +
+    JSON.stringify(
+      {
+        snapshot: now.toISOString(),
+        dateLabel,
+        auto: true,
+        // 这次是拿哪一天的榜在对比。中间断过几天时，页面上要如实说出来
+        vs: prev ? prev.d : null,
+        items,
+      },
+      null,
+      2
+    ) +
     ";\n";
 
   if (DRY) {
@@ -355,7 +375,7 @@ async function main() {
   fs.writeFileSync(OUT, payload, "utf8");
   fs.mkdirSync(path.dirname(HISTORY), { recursive: true });
   fs.writeFileSync(HISTORY, JSON.stringify(history, null, 1), "utf8");
-  saveBoard(todayISO, items.map((i) => i.id));
+  saveBoard(todayISO, items);
 
   console.log(`\n  已写 ${path.relative(ROOT, OUT)}  (${items.length} 条)`);
   console.log(`  已写 ${path.relative(ROOT, HISTORY)}  (追踪 ${Object.keys(history.repos).length} 个仓库)`);

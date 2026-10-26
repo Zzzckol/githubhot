@@ -31,21 +31,19 @@ if (!run(["pipeline/fetch.mjs", "--out", "assets/data.auto.js", "--var", "GH_DAT
   process.exit(1);
 }
 
-console.log("\n── 2/3  回填中文文案 ──────────────────\n");
+console.log("\n── 2/4  回填中文文案 ──────────────────\n");
 if (!run(["pipeline/enrich.mjs", "--local-only"])) {
   console.error("\n✗ 文案层失败，但数据已经更新了，页面上新项目会显示英文原文。");
 }
 
-console.log("\n── 3/3  刷新缓存版本号 ────────────────\n");
-const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-const indexPath = path.join(ROOT, "index.html");
-const before = fs.readFileSync(indexPath, "utf8");
-const after = before.replace(/(assets\/[\w.]+\.js)\?v=[\w]*/g, "$1?v=" + stamp);
-if (after !== before) {
-  fs.writeFileSync(indexPath, after, "utf8");
-  console.log("  版本号 → " + stamp);
-} else {
-  console.log("  版本号没变化（已经是 " + stamp + "）");
+console.log("\n── 3/4  生成历史归档 ──────────────────\n");
+if (!run(["pipeline/archive.mjs"])) {
+  console.error("\n✗ 归档生成失败，页面上的「往回看」会缺今天这一天。");
+}
+
+console.log("\n── 4/4  刷新缓存版本号 ────────────────\n");
+if (!run(["pipeline/stamp.mjs"])) {
+  console.error("\n✗ 版本号没刷新，浏览器可能拿旧缓存。");
 }
 
 /* 顺手报一下本地库覆盖率，新项目多了就知道该补文案了 */
