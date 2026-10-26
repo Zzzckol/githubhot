@@ -12,9 +12,11 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-/* 用北京时间算日期：runner 在 UTC，直接取 toISOString 在北京 8 点前会差一天 */
+/* 用北京时间算，精确到分钟。
+   只用日期（YYYYMMDD）的话，同一天里跑第二次版本号不变，
+   浏览器和 GitHub Pages 的 CDN 会继续吃旧缓存 —— 数据更新了但页面还是上午那份。 */
 const bj = new Date(Date.now() + 8 * 3600 * 1000);
-const stamp = bj.toISOString().slice(0, 10).replace(/-/g, "");
+const stamp = bj.toISOString().slice(0, 16).replace(/[-:T]/g, ""); // 202610260759
 
 const indexPath = path.join(ROOT, "index.html");
 const before = fs.readFileSync(indexPath, "utf8");
