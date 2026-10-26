@@ -1,0 +1,86 @@
+name: 每日抓取
+
+on:
+  schedule:
+    # UTC 00:00 = 北京 08:00（主跑）
+    - cron: "0 0 * * *"
+    # UTC 04:00 = 北京 12:00（补救：早上那次没跑成才真正干活，已经跑过就直接跳过）
+    - cron: "0 4 * * *"
+  workflow_dispatch: {}   # Actions 页面手动点，手动触发不受「今天已跑过」限制
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-fetch
+  cancel-in-progress: false
+
+env:
+  TZ: Asia/Shanghai
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # 一天两次，先看今天有没有存档，有就跳过，避免重复抓
+      - name: 今天是否已经跑过
+        id: check
+        run: |
+          D=$(date -u -d '+8 hours' +%F)
+          if [ -f "pipeline/boards/$D.json" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "今天（$D）已经有榜单存档，跳过抓取"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "今天（$D）还没有存档，开始抓"
+          fi
+
+      - name: 跑增量算法测试
+        if: github.event_name == 'workflow_dispatch' || steps.check.outputs.skip != 'true'
+        run: node pipeline/test-delta.mjs
+
+      - name: 抓取
+        if: github.event_name == 'workflow_dispatch' || steps.check.outputs.skip != 'true'
+        env:
+          # Actions 自带的 token，搜索额度 30 次/分钟、核心 5000 次/小时
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node pipeline/fetch.mjs --out assets/data.auto.js --var GH_DATA_AUTO
+
+      - name: 补中文文案（本地库优先，配了 LLM_API_KEY 才会调模型）
+        if: github.event_name == 'workflow_dispatch' || steps.check.outputs.skip != 'true'
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+          LLM_MODEL: ${{ vars.LLM_MODEL }}
+        run: |
+          if [ -z "$LLM_API_KEY" ]; then
+            echo "没配 LLM_API_KEY：只用 pipeline/zh.json 本地文案库，没命中的新项目保留英文原文。"
+            node pipeline/enrich.mjs --local-only
+          else
+            node pipeline/enrich.mjs
+          fi
+
+      # 不刷版本号，浏览器会一直吃旧的 data.auto.js 缓存，看起来就像没更新
+      - name: 刷新缓存版本号
+        if: github.event_name == 'workflow_dispatch' || steps.check.outputs.skip != 'true'
+        run: node pipeline/stamp.mjs
+
+      - name: 提交结果
+        if: github.event_name == 'workflow_dispatch' || steps.check.outputs.skip != 'true'
+        run: |
+          git config user.name "githubhot-bot"
+          git config user.email "githubhot-bot@users.noreply.github.com"
+          # boards/ 必须提交，不然下次跑没有「昨天的榜」可比，名次变化和连续在榜全废
+          git add assets/data.auto.js pipeline/history.json pipeline/boards index.html
+          if git diff --staged --quiet; then
+            echo "今天数据没变化，不提交"
+          else
+            git commit -m "data: $(date -u -d '+8 hours' +%F)"
+            git push
+          fi

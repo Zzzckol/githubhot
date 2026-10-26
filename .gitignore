@@ -1,0 +1,12 @@
+# 抓取结果的当日缓存，不值得进版本库
+pipeline/cache/
+
+# 测试用的模拟历史
+pipeline/history.mock.json
+
+# 调试输出
+pipeline/out/
+
+node_modules/
+.DS_Store
+Thumbs.db
