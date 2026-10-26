@@ -137,14 +137,9 @@ node pipeline/enrich.mjs --overwrite    # 全部重写（会连本地库的一�
 
 ## 想每天自动跑
 
-**推荐：推到 GitHub 用 Actions**（`.github/workflows/daily.yml` 已经写好，每天北京时间 08:00 跑一次，结果自动 commit）：
+两条路，都装。**本地这套管你人在的时候，Actions 管你休假、关机的时候。**
 
-1. 把整个文件夹推到一个 GitHub 仓库
-2. 仓库 Settings → Secrets → 新建 `LLM_API_KEY`（不建也能跑，本地库里已有的项目照样是中文）
-3. Settings → Actions → General → 允许 workflow 写入
-4. Actions 页面手动点一次「Run workflow」验证
-
-**这台机器上已装好：开机自启日更（2026-10-26 装）。**
+### A. 本机开机自启（已装，2026-10-26）
 
 `schtasks` 被安全策略拦了，所以没走计划任务，走的是「启动文件夹 + 常驻守护」：
 
@@ -159,9 +154,33 @@ pipeline\auto-daily.pyw          每 30 分钟醒一次，发现当天没有 boa
 - 想临时停：双击 `关闭日更.bat`
 - 想彻底关：删掉启动文件夹里的 `githubhot-daily.cmd`（win+R 输入 `shell:startup` 打开）
 
-**这套的限制**：电脑得开着。关机、休眠、没登录的那段时间它不跑，第二天开机后会补当天那一次，但中间断掉的日期补不回来——`pipeline/boards/` 缺哪天，那天的榜位变化就永久没了。
+**限制**：电脑得开着。关机、休眠、没登录的那段它不跑，开机后只补当天那一次，中间断掉的日期补不回来。
 
-**要真正「关机也更新」，只有推到 GitHub 走 Actions 这一条路**（上面那段步骤）。两条可以并存：本地这套管日常，Actions 管你不在的时候。
+### B. GitHub Actions（休假、出差时的唯一解）
+
+云端每天跑，跟你电脑开不开无关。`daily.yml` 已配好两班：**北京 08:00 主跑，12:00 补救**。12:00 那次会先看当天有没有存档，有就跳过，没有才干活——所以既不会重复抓，也不会因为早上那次失败就整天没有。
+
+推送前要做的：
+
+1. GitHub 上建一个 **public** 空仓库（public 才能免费用 Pages；私有仓库的 Actions 也能跑，但页面托管要钱）
+2. 把本机公钥 `~/.ssh/id_ed25519.pub` 加到 GitHub → Settings → SSH and GPG keys
+3. 本地加远端并推送：`git remote add origin git@github.com:<你的用户名>/githubhot.git && git push -u origin main`
+4. 仓库 Settings → Pages → Source 选 `Deploy from a branch`，分支 `main` / 根目录。地址是 `https://<你的用户名>.github.io/githubhot/`
+5. 仓库 Settings → Actions → General → Workflow permissions 选 **Read and write**（不选这步，每天跑完 push 会失败）
+6. Actions 页面点一次「Run workflow」手动验证
+
+配 `LLM_API_KEY` 是可选的（Settings → Secrets → Actions）。不配也能全中文，走 `pipeline/zh.json` 本地库；以后抓到库里没收录的新项目，那几条会回落英文，补进 `zh.json` 就行。
+
+**注意**：`github.io` 在国内访问时快时慢，手机上打不开是常态，翻墙才能稳定。要国内稳定访问得自己上服务器或对象存储 + CDN，那就不免费了。
+
+### 这套有个绕不开的坑（已修）
+
+原来 `daily.yml` 有两处会让云端版本看起来「没更新」或者「永远没有名次变化」：
+
+- `git add` 漏了 `pipeline/boards/`，云端每天跑完不提交榜单存档 → 第二天没有「昨天的榜」可比，新上榜、名次升降、连续在榜全部失效
+- 没刷新 `index.html` 里的 `?v=` 版本号 → 浏览器一直吃旧的 `data.auto.js` 缓存，数据变了页面也不变
+
+现在提交时一起 add `pipeline/boards` 和 `index.html`，抓完先跑 `pipeline/stamp.mjs` 刷版本号（按北京时间算日期，不会在跨零点时差一天）。
 
 ---
 
