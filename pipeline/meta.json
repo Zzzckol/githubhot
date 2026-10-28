@@ -1258,6 +1258,8 @@
    "lang": "未知",
    "created": "2026-10-25",
    "forks": 108,
+   "desc": "Uncle Bob 出的编码技能：先让它跑通，再让它做对。后面挂三个质量闸门工具。",
+   "why": "三天 2280 星。它把「资深工程师怎么审代码」变成可执行的门槛——函数复杂度 CRAP 分数必须低于 10、结构性重复率低于 0.8、变异测试要把漏网用例逼出来。比一堆「请你写干净代码」的提示词硬得多。",
    "official": false
   },
   "elayadesign-ai-design-skills": {
@@ -1266,6 +1268,8 @@
    "lang": "未知",
    "created": "2026-07-29",
    "forks": 669,
+   "desc": "给 AI 编码工具用的设计技能合集，一个技能一个文件夹，按需装。",
+   "why": "三个月 9300 星。目前主打落地页：从提问、定结构、写转化文案，到字体间距圆角动效一套给全。这路子正在替代设计稿——AI 缺的从来不是审美，是可执行的约束。",
    "official": false
   },
   "indexable-inc-blaze": {
@@ -1275,6 +1279,8 @@
    "created": "2026-10-19",
    "forks": 43,
    "orig": "EXPERIMENTAL! Incremental rust builds up to 92x faster than cargo/rustc",
+   "desc": "Rust 增量编译实验，作者称比 cargo/rustc 快最多 92 倍。",
+   "why": "九天 1500 星，README 里自己标着 EXPERIMENTAL。Rust 编译慢是老毛病，它绕开 rustc 走 Cranelift 做增量，热重载直接跳过整轮编译。现在别指望上生产，但这条路要是走通，写 Rust 的体感会换一代。",
    "official": true
   },
   "alishahryar1-free-claude-code": {
@@ -1284,6 +1290,8 @@
    "created": "2026-01-28",
    "forks": 10042,
    "orig": "Use Claude Code, Codex, Antigravity, VSCode, Pi, and OpenCode (and 6 other harnesses) for free (1.3B+ free tokens) from your terminal, app, IDE, or phone, and now from the browser with native browser sessions (multi-harness + multi-model) like OpenClaw (voice supported + ToS friendly)",
+   "desc": "把 Claude Code、Codex、Antigravity、VSCode 等十来个 AI 客户端接上免费额度（号称 13 亿 token），终端、IDE、手机、浏览器都能用。",
+   "why": "6.4 万星，九个月的老项目，说明一直有人在维护。本质是聚合各家免费额度再统一调度，风险也在这——额度规则一变就失效，账号策略也未必容得下。当省钱路子看可以，别当基础设施。",
    "official": false
   },
   "t3dotgg-tstack": {
@@ -1293,6 +1301,8 @@
    "created": "2026-10-24",
    "forks": 117,
    "orig": "The agent skills I use every day. Works with Claude Code and Codex.",
+   "desc": "前端博主 Theo 日常在用的 agent 技能集，Claude Code 和 Codex 都能装。",
+   "why": "四天 2000 星。内容偏 TypeScript 全栈。价值不在技巧多新，在于这是一个每天写业务的人攒出来的默认配置——照抄比从零摸索省事。",
    "official": false
   },
   "andyhuo520-digital-human-koubo": {
@@ -1302,6 +1312,8 @@
    "created": "2026-10-26",
    "forks": 256,
    "orig": "AI digital-human talking-head videos from one photo: Renoise MCP generation + 5 editing styles + 48 creator-grade packaging components. Agent skill for Claude Code / Codex / OpenClaw / WorkBuddy …",
+   "desc": "一张照片生成数字人口播视频：Renoise MCP 生成，含 5 种剪辑风格、48 个成品包装组件，做成 agent 技能。",
+   "why": "两天 1076 星，中文作者做的。口播视频这条赛道工具不少，它选的是做成技能挂进 Claude Code / WorkBuddy，让 agent 直接调，不用另开一个软件。",
    "official": false
   }
  }
