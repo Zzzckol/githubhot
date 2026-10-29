@@ -2,8 +2,15 @@
 """githubhot 常驻日更。
 
 开机由启动文件夹里的「githubhot-日更.cmd」拉起（走 pythonw，无窗口）。
-每 30 分钟醒一次，发现 pipeline/boards/<今天>.json 不存在就跑一次 update.mjs；
-抓到了就继续睡，失败了 20 分钟后重试。
+每 30 分钟醒一次：
+  - 如果「今天已经抓到并推送成功」，就继续睡；
+  - 否则跑一次 update.mjs：抓得到但推不上去，20 分钟后再试。
+判断依据是 pipeline/out/pushed/<今天>.txt —— 这个标记由 update.mjs 在
+「推送完并核验远端 HEAD 一致」之后才写。只有它存在，才算今天真的更新完了。
+
+2026-10-29 修：原来只看 boards/<今天>.json 存不存在、以及 update.mjs 的退出码，
+但 git 不在 PATH 时 publish() 只 warn 一句就正常退出，于是「本地抓到了、线上没变」
+被判成成功，从此不再重试 —— 这是连续几天页面不动 Yet 日志全绿的原因。
 
 日志：pipeline/out/auto.log
 """
@@ -24,9 +31,10 @@ OUT = ROOT / "pipeline" / "out"
 OUT.mkdir(parents=True, exist_ok=True)
 LOG = OUT / "auto.log"
 PIDFILE = OUT / "auto.pid"
+PUSH_DIR = OUT / "pushed"
 
 CHECK_SEC = 30 * 60      # 每 30 分钟检查一次
-RETRY_SEC = 20 * 60      # 抓取失败后的重试间隔
+RETRY_SEC = 20 * 60      # 抓取/推送失败后的重试间隔
 MAX_LOG = 200 * 1024     # 日志超过 200 KB 就砍掉前一半
 LOCK_PORT = 52913        # 单实例锁，占个本地端口
 CREATE_NO_WINDOW = 0x08000000
@@ -66,6 +74,10 @@ def today_str() -> str:
     return datetime.date.today().isoformat()
 
 
+def pushed_marker(day: str) -> pathlib.Path:
+    return PUSH_DIR / f"{day}.txt"
+
+
 def main() -> int:
     # 单实例：端口被占说明已经有一个在跑
     try:
@@ -86,12 +98,18 @@ def main() -> int:
 
     while True:
         day = today_str()
-        board = ROOT / "pipeline" / "boards" / f"{day}.json"
-        if board.exists():
+
+        # 只有「抓到了并且确认推上去了」才算今天完事
+        if pushed_marker(day).exists():
             time.sleep(CHECK_SEC)
             continue
 
-        log(f"{day} 还没有榜单存档，开始抓取")
+        board = ROOT / "pipeline" / "boards" / f"{day}.json"
+        if board.exists():
+            log(f"{day} 的榜单本地已有，但还没确认推到线上，重跑一次推送")
+        else:
+            log(f"{day} 还没有榜单存档，开始抓取")
+
         try:
             r = subprocess.run(
                 [node, "pipeline/update.mjs"],
@@ -112,13 +130,18 @@ def main() -> int:
             time.sleep(RETRY_SEC)
             continue
 
-        if r.returncode == 0:
+        if r.returncode == 0 and pushed_marker(day).exists():
             tail = " | ".join((r.stdout or "").strip().splitlines()[-4:])
-            log(f"抓取成功。{tail}")
+            log(f"已更新并推送成功。{tail}")
             time.sleep(CHECK_SEC)
         else:
+            # 抓到了但没推上去，或者干脆失败了：都要重试，不能装成功
             err = " | ".join((r.stderr or "").strip().splitlines()[-3:])
-            log(f"抓取失败（退出码 {r.returncode}），20 分钟后再试。{err}")
+            tail = " | ".join((r.stdout or "").strip().splitlines()[-3:])
+            log(
+                f"这次没同步成功（退出码 {r.returncode}），20 分钟后再试。"
+                f"{tail}{(' | ' + err) if err else ''}"
+            )
             time.sleep(RETRY_SEC)
 
 
