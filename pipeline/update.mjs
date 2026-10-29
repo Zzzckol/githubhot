@@ -128,6 +128,22 @@ function publish() {
     return false;
   }
 
+  // 远端可能被工作流或另一台机器推过（比如 Actions 自己提交了 data: xxx），
+  // 本地落后时直接 push 会被当成「非快进」拒掉，所以先 rebase 追上。
+  const behindRun = git(["rev-list", "--count", "HEAD..origin/main"]);
+  const behind = behindRun.status === 0 ? parseInt(behindRun.stdout.trim(), 10) || 0 : 0;
+  if (behind > 0) {
+    console.log(`本地落后远端 ${behind} 个提交，先追上去…`);
+    const rebase = git(["rebase", "--autostash", "origin/main"]);
+    if (rebase.status !== 0) {
+      git(["rebase", "--abort"]);
+      console.error("✗ 追远端时冲突了，已回退。线上不会变，手动处理一下再重试。");
+      console.error((rebase.stderr || "").trim().split("\n").slice(-4).join("\n"));
+      return false;
+    }
+    console.log("已追平远端。");
+  }
+
   // 有改动就先提交
   const st = git(["status", "--porcelain"]);
   if (st.status !== 0) {
