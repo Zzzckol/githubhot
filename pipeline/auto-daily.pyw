@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """githubhot 常驻日更。
 
-开机由启动文件夹里的「githubhot-日更.cmd」拉起（走 pythonw，无窗口）。
+开机由启动文件夹里的「githubhot-daily.cmd」拉起（走 pythonw，无窗口）。
 每 30 分钟醒一次：
   - 如果「今天已经抓到并推送成功」，就继续睡；
   - 否则跑一次 update.mjs：抓得到但推不上去，20 分钟后再试。
@@ -10,7 +10,7 @@
 
 2026-10-29 修：原来只看 boards/<今天>.json 存不存在、以及 update.mjs 的退出码，
 但 git 不在 PATH 时 publish() 只 warn 一句就正常退出，于是「本地抓到了、线上没变」
-被判成成功，从此不再重试 —— 这是连续几天页面不动 Yet 日志全绿的原因。
+被判成成功，从此不再重试 —— 这是连续几天页面不动、日志却全绿的原因。
 
 日志：pipeline/out/auto.log
 """

@@ -7,6 +7,10 @@ pipeline/history.mock.json
 # 调试输出
 pipeline/out/
 
+# Python 编译产物，不该进版本库
+__pycache__/
+*.pyc
+
 node_modules/
 .DS_Store
 Thumbs.db

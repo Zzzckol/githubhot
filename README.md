@@ -157,12 +157,13 @@ node pipeline/enrich.mjs --overwrite    # 全部重写（会连本地库的一�
 
 ```
 启动文件夹\githubhot-daily.cmd   →  pythonw pipeline\auto-daily.pyw（无窗口）
-pipeline\auto-daily.pyw          每 30 分钟醒一次，发现当天没有 boards/<今天>.json 就跑一次 update.mjs
+pipeline\auto-daily.pyw          每 30 分钟醒一次，发现今天还没「确认推到线上」就跑一次 update.mjs
 ```
 
+- 判断标准是 `pipeline/out/pushed/<今天>.txt` 这个标记，不是「本地抓到了」
 - 日志：`pipeline/out/auto.log`（超过 200 KB 自动砍掉前一半）
 - 进程：`pipeline/out/auto.pid`；单实例靠占本地端口 52913，起两个也只会活一个
-- 抓取失败（断网、限流）会在 20 分钟后重试，直到当天抓成功
+- 抓取失败、或者抓到了但没推上去，都会在 20 分钟后重试，直到当天真的同步完
 - 想临时停：双击 `关闭日更.bat`
 - 想彻底关：删掉启动文件夹里的 `githubhot-daily.cmd`（win+R 输入 `shell:startup` 打开）
 
@@ -197,6 +198,24 @@ pipeline\auto-daily.pyw          每 30 分钟醒一次，发现当天没有 boa
 - 没刷新 `index.html` 里的 `?v=` 版本号 → 浏览器一直吃旧的 `data.auto.js` 缓存，数据变了页面也不变
 
 现在提交时一起 add `pipeline/boards` 和 `index.html`，抓完先跑 `pipeline/stamp.mjs` 刷版本号（按北京时间算日期，不会在跨零点时差一天）。
+
+### 2026-10-29 又一层坑：抓到了，但没推上去
+
+症状是「每天看着跑完，页面日期一直不动」。
+
+根因：`update.mjs` 的 `publish()` 用 `spawnSync("git")`，而**这台机器的 PATH 里没有 git**（WorkBuddy 自己的 PortableGit 在 `~\.workbuddy\binaries\PortableGit\versions\1.3.0\cmd\git.exe`，没进 PATH）。找不到命令时 `publish()` 只 warn 一句就正常返回，退出码还是 0，于是 `auto-daily.pyw` 记下「抓取成功」，之后当天不再重试——本地数据天天是新的，线上永远停在 10-28。
+
+改了三处：
+
+- `update.mjs` 自己找 git（`GITHUBHOT_GIT` 环境变量 → WorkBuddy PortableGit → 常见安装路径 → PATH），推完再用 `git ls-remote` 核验远端 HEAD 和本地一致，任一步失败都返回 `非 0 退出码`
+- `auto-daily.pyw` 不再看 `boards/<今天>.json`，改看 `pipeline/out/pushed/<今天>.txt`（由 update.mjs 在核验通过后才写）。没这个标记就 20 分钟后重试，不会再「假成功」
+- `publish()` 加了落后远端时先 `rebase`，避免被 Actions 或另一台机器抢先提交后 push 被当非快进拒掉
+
+顺带把误提交的 `pipeline/__pycache__/` 移出版本库，`.gitignore` 补 `__pycache__/`、`*.pyc`。
+
+### 页面「一句话文本」是什么
+
+就是每条项目下面那句中文说明，字段名 `desc`，由 `pipeline/zh.json` 提供（`{ "仓库id": { "desc": "一句话说明", "why": "为什么值得看" } }`）。库里没有的条目会回落成仓库英文原文，页面会给那段加 `.item__desc.raw` 样式。**看到英文就说明那一条没文案**，往 `zh.json` 补、重跑 `enrich.mjs --local-only` 就行，不花钱也不调模型。
 
 ---
 
