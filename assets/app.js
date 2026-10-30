@@ -244,10 +244,13 @@ function renderSide() {
 
   const catCount = {};
   ITEMS.forEach(function (it) { catCount[it.cat] = (catCount[it.cat] || 0) + 1; });
-  const catRows = Object.keys(CATS).sort(function (a, b) { return catCount[b] - catCount[a]; })
+  /* 某天可能一个「学习资源」都没有，count 就是 undefined。
+     2026-10-30 页面上那一栏就是这么显示成 "学习资源 undefined" 的，所以统一兜成 0。 */
+  const catOf = function (k) { return catCount[k] || 0; };
+  const catRows = Object.keys(CATS).sort(function (a, b) { return catOf(b) - catOf(a); })
     .map(function (k) {
       return '<div class="board__row"><span class="n"></span><span class="nm">' + CATS[k] +
-        '</span><span class="v mut">' + catCount[k] + "</span></div>";
+        '</span><span class="v mut">' + catOf(k) + "</span></div>";
     }).join("");
 
   /* 今日新进：昨天不在榜的，按今日涨星排 */
