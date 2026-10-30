@@ -62,31 +62,57 @@ if (!run(["pipeline/stamp.mjs"])) {
 }
 
 console.log("\n── 5/5  发布到线上（提交并推送）──────\n");
+const NO_PUSH = process.argv.includes("--no-push") || !!process.env.GITHUB_ACTIONS || !!process.env.CI;
 const published = publish();
 
-/* 顺手报一下本地库覆盖率，新项目多了就知道该补文案了 */
+/* 顺手报一下本地库覆盖率，新项目多了就知道该补文案了。
+   缺的那几条把 id 一起印出来，省得人自己去比对 —— 之前只报个数字，
+   结果每天都是「有 5 条没文案」，谁也不知道是哪 5 条，就一直没人补。 */
 let miss = 0;
 let total = 0;
+let missIds = [];
 try {
   const src = fs.readFileSync(path.join(ROOT, "assets/data.auto.js"), "utf8");
   const m = src.match(/window\.GH_DATA_AUTO\s*=\s*(\{[\s\S]*\});/);
   const data = JSON.parse(m[1]);
   total = data.items.length;
-  miss = data.items.filter((i) => !i.desc || !i.why).length;
+  missIds = data.items.filter((i) => !i.desc || !i.why).map((i) => i.id);
+  miss = missIds.length;
 } catch (e) {
   /* 读不出来就算了，不影响更新 */
 }
 
+/* 缺文案清单落一份文件，明天再跑时能看到累积了哪些还没补 */
+if (miss) {
+  try {
+    fs.mkdirSync(OUT, { recursive: true });
+    fs.writeFileSync(
+      path.join(OUT, "missing-zh.txt"),
+      `# ${new Date().toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })} 这次缺中文文案的仓库 id\n` +
+        missIds.map((id) => `"${id}": { "desc": "", "why": "" }`).join(",\n") +
+        "\n",
+      "utf8"
+    );
+  } catch (e) {
+    /* 写不进就算了 */
+  }
+}
+
 console.log("\n======================================");
-if (published) {
+if (published && !NO_PUSH) {
   console.log(" 完成。已推到线上，约 1 分钟后生效（Ctrl+R 刷新）");
+} else if (published && NO_PUSH) {
+  console.log(" 完成。只更新了本地文件，没有推送（线上还是旧的）");
 } else {
   console.log(" ✗ 数据抓到了、但没推上去，线上还是旧的");
 }
 console.log("======================================");
 if (miss) {
   console.log(`\n提示：${total} 条里有 ${miss} 条没有中文文案，页面上会显示英文。`);
+  missIds.slice(0, 12).forEach((id) => console.log(`  · ${id}`));
+  if (miss > 12) console.log(`  …… 还有 ${miss - 12} 条`);
   console.log("把它们补进 pipeline/zh.json 就行，格式 {desc, why}。");
+  console.log("骨架已经写进 pipeline/out/missing-zh.txt，照着填 desc/why 后复制进 zh.json 即可。");
 } else {
   console.log(`\n${total} 条全部有中文文案。`);
 }
