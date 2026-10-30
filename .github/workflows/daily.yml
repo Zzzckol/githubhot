@@ -84,30 +84,77 @@ jobs:
       - name: 提交结果
         if: github.event_name == 'workflow_dispatch' || steps.check.outputs.skip != 'true'
         run: |
+          # 2026-10-30 事故复盘，两次：
+          # 一、这里原来是 git pull --rebase --autostash。data.auto.js、data.archive.js、
+          #     history.json、meta.json 都是「每天整份重写」的生成物，两边各改一份文本必然
+          #     冲突，autostash 会把带 <<<<<<< 的坏文件弹回工作区，rebase 退出码还可能被判成
+          #     成功 —— 那天就是这么把坏文件推上线的。
+          # 二、改完第一版又踩一次：脚本里没写 set -e，merge-keep.mjs 崩了以后 bash 照跑，
+          #     归档拿旧底子重算照样推送成功，看上去「更新了」，其实 history 和文案都被回退。
+          #     所以下面第一行必须钉住「任何一条命令失败就停」，且合并失败绝不推送。
+          set -euo pipefail
+
           git config user.name "githubhot-bot"
           git config user.email "githubhot-bot@users.noreply.github.com"
-          # boards/ 必须提交，不然下次跑没有「昨天的榜」可比，名次变化和连续在榜全废
-          git add assets/data.auto.js assets/data.archive.js pipeline/history.json pipeline/boards pipeline/meta.json index.html
 
-          # 2026-10-30 事故：本机日更也在这台机器之外跑，两边同一天都推就会撞。
-          # 本机那边已经改成「远端有今天就让路」，这里也补一道：先追远端再推。
-          if ! git diff --staged --quiet; then
-            git commit -m "data: $(date -u -d '+8 hours' +%F)"
+          git fetch origin main
+          BEHIND=$(git rev-list --count HEAD..origin/main)
+          if [ "$BEHIND" != "0" ]; then
+            echo "落后远端 $BEHIND 个提交，改走「对齐后重算」，不做文本合并"
+            D=$(date -u -d '+8 hours' +%F)
 
-            if ! git pull --rebase --autostash origin main; then
-              git rebase --abort || true
-              echo "::error::追远端时冲突，放弃本次推送，避免把带冲突标记的文件推上线"
+            # 今天刚抓的原料先存一份。文件名把 / 换成 __，供 merge-keep.mjs 认领
+            rm -rf /tmp/keep
+            mkdir -p /tmp/keep
+            cp assets/data.auto.js /tmp/keep/assets__data.auto.js
+            if [ -f pipeline/zh.json ]; then cp pipeline/zh.json /tmp/keep/pipeline__zh.json; fi
+            if [ -f pipeline/history.json ]; then cp pipeline/history.json /tmp/keep/pipeline__history.json; fi
+            if [ -f pipeline/meta.json ]; then cp pipeline/meta.json /tmp/keep/pipeline__meta.json; fi
+            if [ -f "pipeline/boards/$D.json" ]; then cp "pipeline/boards/$D.json" /tmp/keep/board.json; fi
+
+            git reset --hard origin/main
+
+            # 今天的 board 直接放回；history/meta/zh 按条目合并，绝不文本合并
+            if [ -f /tmp/keep/board.json ]; then cp /tmp/keep/board.json "pipeline/boards/$D.json"; fi
+            if ! node pipeline/merge-keep.mjs --keep /tmp/keep --today "$D"; then
+              echo "::error::合并今天抓的原料失败，放弃本次推送（宁可晚一天也不能推回退版）"
               exit 1
             fi
 
-            # 闸：文件名里出现冲突标记就直接失败，别上线
-            if git grep -n -E "^(<<<<<<< |>>>>>>> |^=======$)" -- . > /tmp/marks.txt 2>/dev/null; then
-              echo "::error::工作区有 git 冲突标记，放弃推送"
-              cat /tmp/marks.txt | head -20
-              exit 1
-            fi
-
-            git push origin HEAD:main
-          else
-            echo "今天数据没变化，不提交"
+            # 按远端的底子重算生成物，冲突就没有发生的余地
+            node pipeline/archive.mjs
+            node pipeline/stamp.mjs
           fi
+
+          # boards/ 必须提交，不然下次跑没有「昨天的榜」可比，名次变化和连续在榜全废
+          git add assets/data.auto.js assets/data.archive.js pipeline/history.json pipeline/boards pipeline/meta.json pipeline/zh.json index.html
+
+          if git diff --staged --quiet; then
+            echo "今天数据没变化，不提交"
+            exit 0
+          fi
+
+          # 闸一：暂存区里有冲突标记就直接失败，别上线
+          if git grep --cached -n -E "^(<<<<<<< |>>>>>>> |^=======$)" > /tmp/marks.txt 2>/dev/null; then
+            echo "::error::暂存区有 git 冲突标记，放弃推送"
+            head -20 /tmp/marks.txt
+            exit 1
+          fi
+
+          # 闸二：几个生成出来的脚本必须能通过语法检查，语法错会让整页数据加载失败
+          for f in assets/data.auto.js assets/data.archive.js assets/app.js; do
+            if ! node --check "$f"; then
+              echo "::error::$f 语法检查没通过，放弃推送"
+              exit 1
+            fi
+          done
+
+          # 闸三：今天的日期真在快照里。写错日期或数据没跟上来时，这条能拦住「假装更新」
+          if ! grep -q "\"snapshot\": \"$D" assets/data.auto.js; then
+            echo "::error::data.auto.js 的快照日期不是今天（$D），放弃推送"
+            grep -o "\"snapshot\": \"[^\"]*\"" assets/data.auto.js || true
+            exit 1
+          fi
+
+          git commit -m "data: $(date -u -d '+8 hours' +%F)"
+          git push origin HEAD:main
