@@ -7,7 +7,11 @@
    "cat": "agent",
    "lang": "TypeScript",
    "created": "2026-04-14",
+<<<<<<< Updated upstream
    "forks": 101835,
+=======
+   "forks": 102108,
+>>>>>>> Stashed changes
    "orig": "Reverse engineer anything with agents, from app behavior down to native binaries.",
    "desc": "用 agent 逆向工程任何东西，从 App 的行为一路拆到原生二进制。",
    "why": "191 天 36 万星，这波 agent 热潮里最夸张的一个。它卖的不是「帮你写代码」，是「帮你搞清楚一个黑盒程序在干什么」——这个方向很少见。",
@@ -18,7 +22,11 @@
    "cat": "model",
    "lang": "Python",
    "created": "2026-04-09",
+<<<<<<< Updated upstream
    "forks": 10401,
+=======
+   "forks": 10436,
+>>>>>>> Stashed changes
    "orig": "VoiceStudio is the open-source, fully-local ElevenLabs alternative — voice cloning, voice design, video dubbing, dictation, transcription & audiobook creation in 646 languages.",
    "desc": "完全本地跑的 ElevenLabs 替代品：克隆声音、配音、转录、做有声书，支持 646 种语言。",
    "why": "八万星。声音克隆的门槛已经降到「有张显卡就能自己搭」，它把整套流程收进一个界面。商用之前把授权和肖像权想清楚。",
@@ -29,7 +37,11 @@
    "cat": "agent",
    "lang": "TypeScript",
    "created": "2026-03-17",
+<<<<<<< Updated upstream
    "forks": 6944,
+=======
+   "forks": 6958,
+>>>>>>> Stashed changes
    "orig": "Orca is the place for working with a fleet of agents (e.g. Grok Bot, Claude Code). Run any coding agent with your own subscription. Available on desktop, mobile and remote runtime.",
    "desc": "管理一队编码 agent 的地方：Claude Code、Grok Bot 都能塞进去，用自己的订阅跑，桌面、手机、远程都能连。",
    "why": "十万星。现在的问题是「一个人同时开五个 agent，谁在做什么根本看不清」，它的定位就是解决这个。远程运行时那部分尤其值得看——agent 可以不挂在你电脑上。",
@@ -58,7 +70,11 @@
    "cat": "agent",
    "lang": "JavaScript",
    "created": "2026-06-18",
+<<<<<<< Updated upstream
    "forks": 3369,
+=======
+   "forks": 3385,
+>>>>>>> Stashed changes
    "orig": "A coding-agent skill for multi-phase security audits with independently verified, machine-readable findings",
    "desc": "Cloudflare 出的编码 agent 技能，分阶段做安全审计，结论必须能被机器验证。",
    "why": "今天涨 2049 星，总星四万。它不让你信模型的判断——每条发现都要能独立复现。安全审计最怕 AI 一本正经报假漏洞，这个设计正好卡在那。",
@@ -87,7 +103,11 @@
    "cat": "devtool",
    "lang": "TypeScript",
    "created": "2026-04-21",
+<<<<<<< Updated upstream
    "forks": 5934,
+=======
+   "forks": 5969,
+>>>>>>> Stashed changes
    "orig": "7.4 billion tokens per month. 34 free LLM providers. 635 free model endpoints. All behind one /v1 endpoint, plus any custom OpenAI-compatible endpoint. Smart routing, automatic failover, encrypted keys. Personal experimentation only.",
    "desc": "把 34 家免费模型服务、635 个免费接口塞进一个 /v1 地址后面，带路由和自动切换。",
    "why": "三万九千星，号称每月 74 亿 token 免费额度。这类「免费聚合」永远伴随风险：服务商随时封、key 可能被记录，作者自己也写了仅限个人试验。省钱可以看，别接生产。",
@@ -271,7 +291,11 @@
    "cat": "agent",
    "lang": "TypeScript",
    "created": "2026-03-10",
+<<<<<<< Updated upstream
    "forks": 6853,
+=======
+   "forks": 6866,
+>>>>>>> Stashed changes
    "orig": "Write HTML. Render video. Built for agents.",
    "desc": "写 HTML，渲成视频。专为 agent 设计。",
    "why": "七万星。它把「做视频」降级成「写网页」——每一帧就是一次 DOM 渲染，模型已经会的技能直接能用。这比让模型去操作剪辑软件靠谱得多。",
@@ -318,7 +342,11 @@
    "cat": "model",
    "lang": "Python",
    "created": "2025-12-10",
+<<<<<<< Updated upstream
    "forks": 5523,
+=======
+   "forks": 5527,
+>>>>>>> Stashed changes
    "orig": "AI turns documents or topics into real, native PowerPoint decks—with native shapes, transitions and animations, data-backed charts and tables on demand, audio narration from speaker notes, and support for your own .pptx templates. · by Hugo He",
    "desc": "把文档或一个题目变成真正的 PPT——原生形状、可改的动画、真数据图表，还能套自己的模板。",
    "why": "六万六千星，做了一年。关键是「原生」两个字：多数 AI 做 PPT 给你的是一堆图片，字都改不了。它直接生成可编辑形状，还能读备注生成配音。做培训课件的值得试。",
@@ -383,7 +411,11 @@
    "cat": "devtool",
    "lang": "Python",
    "created": "2026-10-17",
+<<<<<<< Updated upstream
    "forks": 5524,
+=======
+   "forks": 5581,
+>>>>>>> Stashed changes
    "orig": "Debloat any Android or Google TV over Wi-Fi and get an Apple TV-style home.",
    "desc": "用 Wi-Fi 连上安卓电视，删掉预装软件和广告，换成 Apple TV 那种干净桌面。",
    "why": "五天两万一千星。不用拆机刷机，电脑连同一个 Wi-Fi 就能把国产电视的预装应用拔掉。风险是厂商一封口子就不能用了，趁现在能用。",
@@ -394,7 +426,11 @@
    "cat": "agent",
    "lang": "JavaScript",
    "created": "2026-09-24",
+<<<<<<< Updated upstream
    "forks": 1386,
+=======
+   "forks": 1392,
+>>>>>>> Stashed changes
    "orig": "在 dsh 里装上这个插件即可，无需登录、注册或填 API Key，就能使用包括 DeepSeek V4.1 Flash、Kimi K3 在内的前沿模型——完全免费，不限量。 All you do is install this plugin in dsh: no login, no sign-up, no API key — the frontier models are just there, DeepSeek V4.1 Flash and Kimi K3 among them. Completely free, with no usage cap.",
    "desc": "在 DeepSeek Harness 里装个插件，不登录不填 key 就能用 DeepSeek V4.1 Flash、Kimi K3。",
    "why": "三万五千星。号称「完全免费不限量」，这种话基本等于有人替你付钱，能撑多久没人知道。想白试模型可以看，别把正经活往里投。",
@@ -405,7 +441,11 @@
    "cat": "agent",
    "lang": "TypeScript",
    "created": "2026-08-13",
+<<<<<<< Updated upstream
    "forks": 32205,
+=======
+   "forks": 32216,
+>>>>>>> Stashed changes
    "orig": "DeepSeek Harness: Everything is a Plugin.",
    "desc": "DeepSeek 官方出的 agent 框架，除了「万事皆插件」没多写一句。",
    "why": "70 天 25 万星，官方下场。它的做法是不把功能做进主体，桌面端、编辑器、路由全拆成插件。生态会长得快，代价是你得接受它这套抽象。",
@@ -416,7 +456,11 @@
    "cat": "agent",
    "lang": "Rust",
    "created": "2025-11-16",
+<<<<<<< Updated upstream
    "forks": 5594,
+=======
+   "forks": 5619,
+>>>>>>> Stashed changes
    "orig": "The design vocabulary for your coding agent. Steer with polish and bolder, review with critique and audit, catch AI slop before it ships.",
    "desc": "一套设计语言，专门让 AI 助手做出来的界面别那么难看。",
    "why": "八万五千星。它不生成界面，是给 agent 立规矩：间距、层级、留白怎么定。跟堆提示词不同，这是把审美变成约束条件。",
@@ -425,9 +469,13 @@
   "seedds-nxnative": {
    "repo": "seedds/nxnative",
    "cat": "devtool",
-   "lang": "Objective-C",
+   "lang": "Python",
    "created": "2026-10-13",
+<<<<<<< Updated upstream
    "forks": 1519,
+=======
+   "forks": 1571,
+>>>>>>> Stashed changes
    "orig": "Switch games running natively on iPhone, iPad and Mac: an NSP folder becomes an unsigned IPA (NSO rewriter, Horizon HLE host, NVN→Metal)",
    "desc": "让 Switch 游戏在 iPhone、iPad 和 Mac 上原生跑：一个 NSP 文件夹直接变成可安装的 IPA。",
    "why": "十天一千六百星。技术上比模拟器彻底——重写 NSO、接管系统调用、把图形翻成 Metal，等于给游戏换了个壳。能不能大规模用另说，路子很少见。",
@@ -438,7 +486,11 @@
    "cat": "agent",
    "lang": "JavaScript",
    "created": "2026-06-12",
+<<<<<<< Updated upstream
    "forks": 9865,
+=======
+   "forks": 9882,
+>>>>>>> Stashed changes
    "orig": "Makes your AI agent think like the laziest senior dev in the room. The best code is the code you never wrote.",
    "desc": "给 AI 编码助手装一个「很懒的资深工程师」人格：能不写就不写。",
    "why": "13 万星说明一件事——AI 最大的毛病不是不会写，是过度设计、加一堆没人要的抽象层。它主张「最好的代码是没写的代码」，比任何提示词技巧都实在。",
@@ -449,7 +501,11 @@
    "cat": "model",
    "lang": "Python",
    "created": "2026-10-16",
+<<<<<<< Updated upstream
    "forks": 2894,
+=======
+   "forks": 2902,
+>>>>>>> Stashed changes
    "orig": "DeepInfer: High-performance, large-scale inference framework for DeepSeek models",
    "desc": "DeepSeek 官方的大模型推理框架，专为自家模型调优。",
    "why": "上线 6 天不到两万星。官方自己做推理框架，通常意味着后面要压成本或者推自研硬件。想自建部署的，照着它配比照论文配省事。",
@@ -471,7 +527,11 @@
    "cat": "agent",
    "lang": "Shell",
    "created": "2026-02-03",
+<<<<<<< Updated upstream
    "forks": 25776,
+=======
+   "forks": 25791,
+>>>>>>> Stashed changes
    "orig": "Skills for Real Engineers. Straight from my .agents directory.",
    "desc": "一位工程师直接从自己 .agents 目录里掏出来的编码技能集。",
    "why": "30 万星，跟 DeepSeek Harness 一个量级。价值在「真实在用」四个字——不是为开源整理的展示品，是他自己天天跑的那一套。",
@@ -482,7 +542,11 @@
    "cat": "agent",
    "lang": "Python",
    "created": "2026-04-03",
+<<<<<<< Updated upstream
    "forks": 13199,
+=======
+   "forks": 13224,
+>>>>>>> Stashed changes
    "orig": "Turn any codebase, with its docs, SQL schemas, configs, and PDFs, into a queryable knowledge graph. A /graphify skill for Claude Code, Cursor, Codex, and Gemini CLI: local deterministic AST parsing, every edge explained, no vector store.",
    "desc": "把一个代码库连同文档、SQL 结构、配置文件、PDF 一起转成可查询的知识图谱，不用向量库。",
    "why": "13 万星。它明确说不用向量库、用确定性 AST 解析，每条边都能解释来源——这正好戳在 RAG 被骂得最狠的地方：不知道它为什么这么答。",
@@ -493,7 +557,11 @@
    "cat": "agent",
    "lang": "JavaScript",
    "created": "2026-01-18",
+<<<<<<< Updated upstream
    "forks": 43286,
+=======
+   "forks": 43323,
+>>>>>>> Stashed changes
    "orig": "The agent harness performance optimization system. Skills, instincts, memory, security, and research-first development for Claude Code, Codex, Opencode, Cursor and beyond.",
    "desc": "给 Claude Code、Codex、Cursor 这类编码 agent 做性能优化：技能、直觉、记忆、安全检查。",
    "why": "28 万星，做了九个月。现在大家都在往 agent 外面套一层「怎么让它少犯错」，它把技能、记忆、安全检查、研究流程全塞了进来，东西堆得最多——代价是配置面也大，而且绑着 Claude Code 的用法习惯。",
@@ -504,7 +572,11 @@
    "cat": "model",
    "lang": "C++",
    "created": "2026-09-24",
+<<<<<<< Updated upstream
    "forks": 3872,
+=======
+   "forks": 3884,
+>>>>>>> Stashed changes
    "orig": "Qwen3.8-Flash-Next on any consumer hardware: one-click install for Windows / Linux. Strata inference engine, OpenAI/Anthropic API on localhost, optional image input.",
    "desc": "在普通消费级硬件上跑 Qwen3.8-Flash-Next，Windows 和 Linux 一键装，本地开 OpenAI 兼容接口。",
    "why": "三万星。它解决的是「我没有显卡集群但想试这个模型」。想在自己机器上玩玩，用这类工具比手动配环境快一整天。",
@@ -515,7 +587,11 @@
    "cat": "model",
    "lang": "C#",
    "created": "2026-09-29",
+<<<<<<< Updated upstream
    "forks": 1081,
+=======
+   "forks": 1083,
+>>>>>>> Stashed changes
    "orig": "Free, open-source file converter. Convert 263 formats offline by drag & drop — images, PDF, Word, Excel, PowerPoint, HWP/HWPX, video, audio, e-books and archives. No upload, no Office needed.",
    "desc": "本地文件转换器，拖进去就能转 255 种格式，图片、PDF、Office、视频、音频、电子书、压缩包都行，不上传、不装 Office。",
    "why": "九千星。真正省事的地方是「不上传」——很多在线转换站把你的文件存在哪没人知道。本地跑、离线转，这种事今年应该会越来越多。",
@@ -526,7 +602,11 @@
    "cat": "agent",
    "lang": "Python",
    "created": "2026-03-18",
+<<<<<<< Updated upstream
    "forks": 21395,
+=======
+   "forks": 21426,
+>>>>>>> Stashed changes
    "orig": "The job search that runs on your machine. AI job application framework built on Claude Code: evaluate postings, tailor CVs, write cover letters, prep interviews. Fork it and own it.",
    "desc": "跑在自己电脑上的求职流程：评估岗位、改简历、写求职信、准备面试，基于 Claude Code 搭的。",
    "why": "六万三千星。它把求职这件苦活拆成可重复的流程，而且数据不出本机——同类工具大多要你把简历交给某个网站，这个不用。",
@@ -537,7 +617,11 @@
    "cat": "devtool",
    "lang": "Kotlin",
    "created": "2026-10-20",
+<<<<<<< Updated upstream
    "forks": 640,
+=======
+   "forks": 643,
+>>>>>>> Stashed changes
    "orig": "给国产电视的一块干净桌面：参照 tvOS 设计的开源 Android TV 桌面，没有广告，开机自动接管。A tvOS-style launcher for Xiaomi, TCL and other China-market TVs.",
    "desc": "给小米、TCL 这类国产电视做的开源桌面，参照 tvOS 设计，没广告，开机自己接管。",
    "why": "上线两天 2600 星，量不大但方向对。它和第 1 名那个 cleanyourtv 是一路的——国产电视的默认桌面太脏，已经有人开始成规模地造反了。",
@@ -548,7 +632,11 @@
    "cat": "agent",
    "lang": "Go",
    "created": "2026-09-23",
+<<<<<<< Updated upstream
    "forks": 2074,
+=======
+   "forks": 2087,
+>>>>>>> Stashed changes
    "orig": "Every agent's model. One place. Codex on DeepSeek, Claude Code on Kimi, from the menu bar.",
    "desc": "菜单栏里一个小工具，把各家模型和编码 agent 接起来：Codex 跑在 DeepSeek 上，Claude Code 跑在 Kimi 上。",
    "why": "一万九千星。解决的是一件很实际的事——你手里有 A 的订阅和 B 的 key，想混着用。这种中间层活不长，但只要接口一变就有人需要。",
@@ -570,7 +658,11 @@
    "cat": "devtool",
    "lang": "Kotlin",
    "created": "2026-09-24",
+<<<<<<< Updated upstream
    "forks": 829,
+=======
+   "forks": 835,
+>>>>>>> Stashed changes
    "orig": "DroidDeck brings the SteamOS experience to Android",
    "desc": "把 SteamOS 那套手柄友好的桌面搬到安卓上。",
    "why": "一万二千星。掌机和小主机缺的不是硬件，是能用手柄操作的系统界面。安卓平板或安卓掌机装它，立刻变成一台游戏机。",
@@ -602,7 +694,11 @@
    "cat": "agent",
    "lang": "JavaScript",
    "created": "2026-04-15",
+<<<<<<< Updated upstream
    "forks": 6213,
+=======
+   "forks": 6220,
+>>>>>>> Stashed changes
    "orig": "Turn any idea, plan, or codebase into a beautiful interactive diagram. An agent skill for Claude Code, Codex, and more.",
    "desc": "把一段想法、计划或代码库变成可交互的架构图，是给编码 agent 用的技能。",
    "why": "八万七千星。这类工具真正解决的是「说不清楚」——评审时一张能点的图，比贴一段文字有用。它支持多家 agent，不只绑 Claude。",
@@ -613,7 +709,11 @@
    "cat": "learn",
    "lang": "Python",
    "created": "2026-10-18",
+<<<<<<< Updated upstream
    "forks": 1322,
+=======
+   "forks": 1328,
+>>>>>>> Stashed changes
    "orig": "数学（小学到高中）、英语（三年级到高中）、初中物理的知识图谱：1644 个知识点、2403 条先修边、6723 道题，对齐课标，附自适应前置诊断。",
    "desc": "中小学数学和英语的知识图谱加前置诊断，1503 个知识点、6159 道题，对齐人教版课标。",
    "why": "两千星，上线四天。少见的把国内教材结构真正拆成数据的中文项目。做教育产品、做自适应练习的，这份图谱能省几个月手工活。",
@@ -624,7 +724,11 @@
    "cat": "content",
    "lang": "Python",
    "created": "2026-02-24",
+<<<<<<< Updated upstream
    "forks": 9419,
+=======
+   "forks": 9430,
+>>>>>>> Stashed changes
    "orig": "Give your AI agent eyes to see the entire internet. Read & search Twitter, Reddit, YouTube, GitHub, Bilibili, XiaoHongShu — one CLI, zero API fees.",
    "desc": "给 AI agent 装一双看全网的眼睛：一个命令行读推特、Reddit、YouTube、GitHub、B 站、小红书，不收 API 费。",
    "why": "十万星。价值在于绕开了「每个平台都得申请 API」这道墙。做内容聚合和舆情的最该看这个——顺便说，我做这个站时最想要的就是这类东西。",
@@ -635,7 +739,11 @@
    "cat": "devtool",
    "lang": "Rust",
    "created": "2026-09-30",
+<<<<<<< Updated upstream
    "forks": 13201,
+=======
+   "forks": 13216,
+>>>>>>> Stashed changes
    "orig": "PhotoCraft: An open-source, photo editor written by scratch in pure Rust",
    "desc": "从零用 Rust 写的开源照片编辑器。同一个组织还有 PDF、视频、矢量图、CAD、Word 版本。",
    "why": "22 天 7 万星。这个组织在一口气重写一批桌面软件，全部纯 Rust、全部不看原厂代码。能不能日常用另说，但这个系列值得盯住。",
@@ -646,7 +754,11 @@
    "cat": "agent",
    "lang": "JavaScript",
    "created": "2026-10-08",
+<<<<<<< Updated upstream
    "forks": 1853,
+=======
+   "forks": 1860,
+>>>>>>> Stashed changes
    "orig": "An agent skill for creating detailed, interactive isometric illustrations of real-world machines and complex systems. Generates polished SVGs with optional WebGL shaders and 3D effects.",
    "desc": "一个 agent 技能，把机器、系统这类复杂结构的内部画成立体剖面图，输出 SVG。",
    "why": "两周一万八千星。用处不在画图本身，是把「这东西怎么运作」变成一张能讲的图。做培训、做方案的，这类技能比写草稿省事得多。",
@@ -657,7 +769,11 @@
    "cat": "agent",
    "lang": "JavaScript",
    "created": "2026-02-19",
+<<<<<<< Updated upstream
    "forks": 7118,
+=======
+   "forks": 7127,
+>>>>>>> Stashed changes
    "orig": "Agent skills that give coding agents taste: art direction, reference images and a browser check instead of generic AI pages",
    "desc": "一组给编码 agent 加「审美」的技能：定美术方向、找参考图、用浏览器自检，而不是任它生成一版通用页面。",
    "why": "十万星。和 ui-ux-pro-max 打同一个靶子，区别是它强调「先有参考再动手」，还要求 agent 自己开浏览器看结果。这套流程比堆提示词更接近真实设计过程。",
@@ -668,7 +784,11 @@
    "cat": "agent",
    "lang": "Python",
    "created": "2025-11-30",
+<<<<<<< Updated upstream
    "forks": 15071,
+=======
+   "forks": 15083,
+>>>>>>> Stashed changes
    "orig": "An AI skill that provides design intelligence for building professional UI/UX across multiple platforms.",
    "desc": "一个给 AI 用的 UI/UX 设计技能，让生成出来的界面接近专业水准。",
    "why": "13 万星，做了快一年。界面「一眼 AI 味」是现在最普遍的抱怨，它就是冲着这个来的，而且跨平台通用。到底好不好看，装上生成一张就知道，别信我一句评价。",
@@ -679,7 +799,11 @@
    "cat": "agent",
    "lang": "未知",
    "created": "2026-01-27",
+<<<<<<< Updated upstream
    "forks": 22604,
+=======
+   "forks": 22611,
+>>>>>>> Stashed changes
    "orig": "A single CLAUDE.md file to improve Claude Code behavior, derived from Andrej Karpathy's observations on LLM coding pitfalls.",
    "desc": "一个 CLAUDE.md 文件，把 Karpathy 对「大模型写代码会踩哪些坑」的观察变成行为约束。",
    "why": "22 万星，内容就一个配置文件。这说明现阶段约束 agent 最有效的还不是工具，是有人把踩过的坑写成规则塞给它。半小时读完，值。",
@@ -712,7 +836,7 @@
    "cat": "agent",
    "lang": "TypeScript",
    "created": "2026-02-13",
-   "forks": 12132,
+   "forks": 12213,
    "orig": "Never stop coding. Free MIT AI gateway: one endpoint, 375 providers (150+ free), 1,400+ models Kimi, Claude, GPT, Gemini, GLM, DeepSeek, MiniMax. Works with Claude Code, Codex, Cursor, OpenCode, Cline & Copilot. Quota-aware auto-fallback, RTK+Caveman compression saves 15-95% tokens, MCP/A2A, Desktop/PWA. Built by 900+ contributors",
    "desc": "MIT 协议的 AI 网关：接 375 家服务商、1400 多个模型，额度用完自动换，还能压缩上下文。",
    "why": "八万星，900 多人贡献。它和 freellmapi 打同一块地盘，但这个更偏工程——配额感知、失败回退、上下文压缩都做了。要自建多模型切换的底座可以拿它。",
@@ -745,7 +869,7 @@
    "cat": "agent",
    "lang": "TypeScript",
    "created": "2026-03-02",
-   "forks": 17905,
+   "forks": 17988,
    "orig": "The open-source app everyone uses to manage agents at work",
    "desc": "在公司里管 agent 的开源工具，把多个 agent 当员工一样派活、看进度。",
    "why": "十万星，八个多月。方向是「agent 的工位管理」——谁领了什么活、做到哪一步。这个比单个 agent 强不强更接近实际用起来会卡住的地方。",
@@ -756,7 +880,11 @@
    "cat": "devtool",
    "lang": "Rust",
    "created": "2026-10-07",
+<<<<<<< Updated upstream
    "forks": 1539,
+=======
+   "forks": 1559,
+>>>>>>> Stashed changes
    "orig": "SolidCraft: an open-source parametric 3D CAD application built in pure Rust. Desktop, web, and automation through MCP.",
    "desc": "纯 Rust 写的参数化 3D CAD，桌面和网页都能跑，还能通过 MCP 让 agent 直接改模型。",
    "why": "九千星。CAD 是桌面软件里最难替代的一类，它敢从零写，还顺手接了 MCP——意思是你用嘴说，模型改你的三维模型。这个组合比「又一个开源 CAD」有意思。",
@@ -767,7 +895,11 @@
    "cat": "learn",
    "lang": "HTML",
    "created": "2026-09-07",
+<<<<<<< Updated upstream
    "forks": 6187,
+=======
+   "forks": 6192,
+>>>>>>> Stashed changes
    "orig": "高性价比人生指南: 长寿防病、急救、省钱理财、法律红线、失业与工伤、医保社保、恋爱婚育、怀孕育儿、创业与做平台合规、出国与技能。每条写明成本、收益、证据等级和原始出处，只引期刊论文与官方文件。",
    "desc": "一份中文人生指南：防病急救、省钱理财、劳动法、社保、婚育、创业、出国，每条都写明成本和证据来源。",
    "why": "45 天 6.7 万星。写法少见——每条都给成本、收益、证据等级和原始出处，只引期刊和官方文件，不是「多喝热水」那类。中文互联网缺的就是这个。",
@@ -800,7 +932,11 @@
    "cat": "agent",
    "lang": "HTML",
    "created": "2026-04-16",
+<<<<<<< Updated upstream
    "forks": 4103,
+=======
+   "forks": 4110,
+>>>>>>> Stashed changes
    "orig": "Editorial diagram design for Claude Code, Codex, GitHub Copilot, Cursor, Factory Droid, Qoder, and Pi. 45 diagram types. Self-contained HTML + SVG. No shadows. No Mermaid slop.",
    "desc": "给编码 agent 的图表设计技能，45 种图型各带三个版本（浅色 / 深色 / 完整编辑排版），输出成一个自带样式的 HTML + SVG 文件。",
    "why": "六万星，作者是设计师。它卖的不是「比 Mermaid 好看」，是「这张图是拿去发布的」——按一套编辑排版规范摆位，还能提取你的品牌色。作者自己在 README 里认了短板：图没法 diff、同一句话两次排版可能不一样。仓库里会反复改的文档，还是该用 Mermaid。",
@@ -866,7 +1002,11 @@
    "cat": "agent",
    "lang": "Python",
    "created": "2026-01-18",
+<<<<<<< Updated upstream
    "forks": 4923,
+=======
+   "forks": 4937,
+>>>>>>> Stashed changes
    "orig": "Agent skill that removes signs of AI-generated writing from text",
    "desc": "一个 agent 技能，专门删掉文本里的「AI 味」。",
    "why": "五万九千星。它做的事很具体：破折号、三段排比、「不仅…而且」、「让我们一起」——这些特征被逐个点名。比笼统说一句「太 AI 了」有用得多。",
@@ -877,7 +1017,7 @@
    "cat": "agent",
    "lang": "Rust",
    "created": "2026-03-31",
-   "forks": 107739,
+   "forks": 107646,
    "orig": "An agent-managed museum exhibit, built in Rust with Gajae-Code / LazyCodex — developed and maintained with no human intervention.",
    "desc": "一个由 agent 自己维护的 Rust 项目——开发、提交、修 bug 全程没人类参与。",
    "why": "19.5 万星，10.7 万 fork，fork 数离谱地接近一半。这更像一场实验：让 agent 独立跑一个真实项目会烂成什么样。结论未定，过程值得看。",
@@ -888,7 +1028,11 @@
    "cat": "devtool",
    "lang": "C",
    "created": "2026-10-18",
+<<<<<<< Updated upstream
    "forks": 1263,
+=======
+   "forks": 1279,
+>>>>>>> Stashed changes
    "orig": "Your GeForce runs AI at half speed. This fixes it for 20/30/40 series cards. Up to 2× FP16 / BF16 / TF32 tensor throughput",
    "desc": "把 Nvidia 30 系显卡的 FP/BF16 指令发射率解到专业卡那一档。",
    "why": "8 天 7419 星，比同类的 40 系解锁项目热度还高。原因是 30 系存量大、二手便宜，解完能当半张专业卡使。同样是动固件，后果一样自负。",
@@ -921,7 +1065,11 @@
    "cat": "agent",
    "lang": "Markdown",
    "created": "2026-03-16",
+<<<<<<< Updated upstream
    "forks": 3002,
+=======
+   "forks": 3009,
+>>>>>>> Stashed changes
    "orig": "Skills for Designers and Engineers.",
    "desc": "给设计师和工程师的 agent 技能集，作者是 Sonner、Vaul 这些动效组件的作者。",
    "why": "四万八千星，纯 Markdown。作者做的组件很多人在用，所以他写的规则来自真实项目的手感，不是总结文章。",
@@ -969,7 +1117,11 @@
    "cat": "devtool",
    "lang": "Lean",
    "created": "2026-10-06",
+<<<<<<< Updated upstream
    "forks": 1919,
+=======
+   "forks": 1923,
+>>>>>>> Stashed changes
    "desc": "仓库没写描述。OpenAI 名下用 Lean 写的项目，Lean 是形式化数学的证明语言。",
    "why": "一万五千星，一句话都没留。用 Lean 基本能确定是数学证明方向，但具体做什么、做到什么程度得等它自己说。这类官方占坑的项目，先收藏不投入。",
    "official": true
@@ -1110,7 +1262,11 @@
    "cat": "agent",
    "lang": "CSS",
    "created": "2026-04-27",
+<<<<<<< Updated upstream
    "forks": 2165,
+=======
+   "forks": 2179,
+>>>>>>> Stashed changes
    "orig": "Anti-AI-slop design skill for Claude Code, Cursor, and Codex.",
    "desc": "给 Claude Code、Cursor、Codex 用的设计 skill，专门治「一眼看出是 AI 做的」那种页面。",
    "why": "3.6 万星，今天涨 1683，直接冲进前五。这类「去 AI 味」的工具今年冒得很快，说明审美疲劳是真的——同一个提示词做出来的落地页越来越像。语言是 CSS，说明它主要管样式层，不是把你的代码重写一遍。",
@@ -1121,7 +1277,11 @@
    "cat": "agent",
    "lang": "Python",
    "created": "2025-12-28",
+<<<<<<< Updated upstream
    "forks": 6106,
+=======
+   "forks": 6157,
+>>>>>>> Stashed changes
    "orig": "DeepTutor: Lifelong Personalized Tutoring. https://deeptutor.info/.",
    "desc": "DeepTutor，自称「终身个性化辅导」的 AI 家教，带命令行工具和深度检索。",
    "why": "官方号，4.3 万星，303 天的老库今天涨 881。AI 家教难的不是答题，是记住你学到哪一步、下次从哪接——名字里敢写 lifelong，就看它接不接得住。topics 里有 deepresearch，意思是它自己去查资料，不全靠模型脑子里那点存货。",
@@ -1132,7 +1292,11 @@
    "cat": "agent",
    "lang": "Python",
    "created": "2026-10-24",
+<<<<<<< Updated upstream
    "forks": 423,
+=======
+   "forks": 425,
+>>>>>>> Stashed changes
    "orig": "关掉国产安卓手机系统里的广告、热搜、资讯推荐和营销推送。不 root，可还原，支持 AI 智能体一键执行。",
    "desc": "关掉国产安卓手机系统里的广告、热搜、资讯推荐和营销推送。不 root，可以还原，支持 AI 智能体一键执行。",
    "why": "3 天的新库，今天涨 671。不 root 是最大卖点，等于不刷机、保修还在。topics 只点了 ColorOS 和 HyperOS，说明主攻 OPPO 和小米；别的品牌能关多深，得自己试，别指望一劳永逸。",
@@ -1143,7 +1307,11 @@
    "cat": "agent",
    "lang": "JavaScript",
    "created": "2026-08-19",
+<<<<<<< Updated upstream
    "forks": 2896,
+=======
+   "forks": 2922,
+>>>>>>> Stashed changes
    "orig": "DeepSeek Harness 破甲：让所有模型都能破甲，不同模型可换不同提示词；默认提示词面向国模「小码酱」。Jailbreak for every model — swap prompts per model. 求 Star 收藏 ⭐ 如要二开，请查看署名要求部分",
    "desc": "给 DeepSeek Harness 用的「破甲」插件，换不同提示词套开不同模型，默认那套是冲着国产模型写的。",
    "why": "9882 星，69 天。作者自己在描述里写「求 Star 收藏」，态度挺直白。这类东西的实际效果高度依赖模型版本，今天能用的提示词，模型一升级就废，收着可以，别当成稳的。想二次开发先看它 README 里的署名要求。",
@@ -1165,7 +1333,11 @@
    "cat": "agent",
    "lang": "HTML",
    "created": "2026-07-10",
+<<<<<<< Updated upstream
    "forks": 215,
+=======
+   "forks": 219,
+>>>>>>> Stashed changes
    "orig": "FREE FOREVER, NO LIMITS 100% Programmatic, Zero-AI Plagiarism Remover & Similarity Evader. Bypass Turnitin, iThenticate, GPTZero, CopyLeaks, Quillbot & ZeroGPT for LaTeX, DOCX, & Multi-Language Source Code.",
    "desc": "声称能把 AI 写的文章洗到查重和 AI 检测都过，点名要绕 Turnitin、iThenticate、GPTZero 这一串。",
    "why": "7701 星，109 天，今天涨 483。全大写标榜「永久免费、无限制」，这种承诺本身就值得警惕——真那么灵，作者靠什么活。它的说法是纯程序化改写、不走 AI，效果在这里没法验证。要用它交东西之前，先想清楚被查出来是谁承担。",
@@ -1186,7 +1358,11 @@
    "cat": "agent",
    "lang": "JavaScript",
    "created": "2026-09-26",
+<<<<<<< Updated upstream
    "forks": 1044,
+=======
+   "forks": 1051,
+>>>>>>> Stashed changes
    "orig": "A toolbox of film styles made in code for Claude Code: 66 ready to use, and your own. Each style is a style prompt plus a demo film made entirely in code by Claude Opus 5.5, with no video model. By Lemomo. · 一套用代码做片的风格工具箱：66 种现成风格，也能做出你自己的",
    "desc": "一套用代码做片的风格工具箱：59 种现成风格，也能写自己的。每个风格是一段提示词加一支完全用代码生成的样片，不调用视频模型。",
    "why": "8067 星，31 天，今天涨 385。卖点是「不靠视频模型」——画面是代码算出来的，所以能复现、能改参数，不像 AI 视频每次生成都不一样。适合片头、动态图形这种要精确控制的活，不适合需要真实画面的场景。",
@@ -1241,7 +1417,11 @@
    "cat": "agent",
    "lang": "Python",
    "created": "2026-10-20",
+<<<<<<< Updated upstream
    "forks": 695,
+=======
+   "forks": 742,
+>>>>>>> Stashed changes
    "orig": "11 Claude skills for day trading: scan thousands of charts, track breaking news, time every entry and exit, and replay every outcome before you risk a dollar.",
    "desc": "11 个给 Claude 用的日内交易 skill：批量扫图、盯突发新闻、卡进出场时间，下注之前先把每种结果回放一遍。",
    "why": "2056 星，7 天。它把「回测」放在最前面说，这点比大多数「AI 选股」工具诚实——先拿历史数据跑一遍，再谈真钱。但日内交易的胜负手在滑点和情绪，这两样回测复现不了。当工具看，别当信号看。",
@@ -1252,7 +1432,11 @@
    "cat": "agent",
    "lang": "JavaScript",
    "created": "2026-04-04",
+<<<<<<< Updated upstream
    "forks": 14510,
+=======
+   "forks": 14525,
+>>>>>>> Stashed changes
    "orig": "Open-source AI job search agent and job finder: scan job boards, score each job 1-5 against your CV before you apply, tailor an ATS-friendly resume and cover letter, get interview prep and a job application tracker. It helps you fill in each application; you press Submit. Runs locally in your AI coding CLI (Claude Code, Codex, OpenCode and more).",
    "desc": "找工作的 AI agent：扫招聘网站、按你的简历给每个岗位打 1-5 分、顺带改出过 ATS 的简历和求职信、准备面试题，还有一个投递追踪表。最后提交由你按。",
    "why": "7.7 万星，206 天，官方号。今天只涨 251，热劲过了但榜上站得稳。最有用的其实是那个打分——先把不值得投的筛掉，比无脑多投强。跑在 Claude Code、Codex 这类命令行里，得先会折腾这些。你要是已经在弄投递追踪，可以看看它的打分逻辑怎么设计的。",
@@ -1263,7 +1447,11 @@
    "cat": "devtool",
    "lang": "未知",
    "created": "2026-10-25",
+<<<<<<< Updated upstream
    "forks": 247,
+=======
+   "forks": 261,
+>>>>>>> Stashed changes
    "desc": "Uncle Bob 出的编码技能：先让它跑通，再让它做对。后面挂三个质量闸门工具。",
    "why": "三天 2280 星。它把「资深工程师怎么审代码」变成可执行的门槛——函数复杂度 CRAP 分数必须低于 10、结构性重复率低于 0.8、变异测试要把漏网用例逼出来。比一堆「请你写干净代码」的提示词硬得多。",
    "official": false
@@ -1273,7 +1461,11 @@
    "cat": "agent",
    "lang": "未知",
    "created": "2026-07-29",
+<<<<<<< Updated upstream
    "forks": 862,
+=======
+   "forks": 881,
+>>>>>>> Stashed changes
    "desc": "给 AI 编码工具用的设计技能合集，一个技能一个文件夹，按需装。",
    "why": "三个月 9300 星。目前主打落地页：从提问、定结构、写转化文案，到字体间距圆角动效一套给全。这路子正在替代设计稿——AI 缺的从来不是审美，是可执行的约束。",
    "official": false
@@ -1294,7 +1486,7 @@
    "cat": "agent",
    "lang": "Python",
    "created": "2026-01-28",
-   "forks": 10042,
+   "forks": 10115,
    "orig": "Use Claude Code, Codex, Antigravity, VSCode, Pi, and OpenCode (and 6 other harnesses) for free (1.3B+ free tokens) from your terminal, app, IDE, or phone, and now from the browser with native browser sessions (multi-harness + multi-model) like OpenClaw (voice supported + ToS friendly)",
    "desc": "把 Claude Code、Codex、Antigravity、VSCode 等十来个 AI 客户端接上免费额度（号称 13 亿 token），终端、IDE、手机、浏览器都能用。",
    "why": "6.4 万星，九个月的老项目，说明一直有人在维护。本质是聚合各家免费额度再统一调度，风险也在这——额度规则一变就失效，账号策略也未必容得下。当省钱路子看可以，别当基础设施。",
@@ -1327,7 +1519,11 @@
    "cat": "devtool",
    "lang": "Python",
    "created": "2026-10-25",
+<<<<<<< Updated upstream
    "forks": 370,
+=======
+   "forks": 386,
+>>>>>>> Stashed changes
    "orig": "Free, open-source, offline checks for traces of known mercenary spyware. Works on Windows, macOS and Linux, Android phones and iPhone backups.",
    "desc": "离线查间谍软件痕迹的取证工具：扫 Windows、macOS、Linux、安卓手机和 iPhone 备份，不用联网也不上传任何样本。",
    "why": "四天 2768 星，今天单日涨 2115，榜上排在第三。它针对的是 Pegasus 那类商业间谍软件，把已知的 IOC 规则对你的设备跑一遍。价值全在「离线」两个字——真被盯上的人最怕的是检测的时候又把样本送出去一次。但规则库是固定的，扫出来干净不等于干净，只能当排查的第一道筛子。",
@@ -1338,7 +1534,11 @@
    "cat": "agent",
    "lang": "Python",
    "created": "2026-04-27",
+<<<<<<< Updated upstream
    "forks": 1733,
+=======
+   "forks": 1735,
+>>>>>>> Stashed changes
    "orig": "Independent Auditing of AI Agents. Run by human or the agent itself, to answer the most crucial question in the AI Agent Economy. Is the agent doing what is supposed to do? With iFixAi you can have this answer in less than 120 seconds.",
    "desc": "给 AI Agent 做体检的开源工具：内置欧盟 AI 法案、ISO 42001、OWASP LLM 这些合规清单，跑 120 秒出一份审计报告。",
    "why": "3.7 万星，185 天，官方号。它把监管条文拆成一条条能跑的检查，从提示注入、幻觉检测一路扫到权限边界。真做企业交付的话，这套清单比自己拍脑袋写测试用例省事。但 120 秒跑出来的结论只能当基线——合规审计要的是证据链，工具给的是起点。",
@@ -1360,7 +1560,11 @@
    "cat": "agent",
    "lang": "TypeScript",
    "created": "2026-07-22",
+<<<<<<< Updated upstream
    "forks": 1002,
+=======
+   "forks": 1007,
+>>>>>>> Stashed changes
    "orig": "Consider it done. The open-source AI agent that works out of the box · 想到，就能做到。开源、开箱即用的 AI Agent。",
    "desc": "开箱即用的开源 AI Agent 客户端：电脑和手机共用同一个会话，能借用另一台机器上配好的模型，手机上还能直接远程操作桌面。",
    "why": "8096 星，99 天，官方号。把 Claude Code、Codex、Pi 三种 harness 塞进同一个界面，换模型不用换工具，这点比多数套壳客户端实在。Electron 加 React Native，客户端 Apache-2.0，后端闭源。官方版带了 TapDB 统计，介意的话记得到设置里关掉。",
@@ -1382,9 +1586,51 @@
    "cat": "model",
    "lang": "Python",
    "created": "2026-09-08",
+<<<<<<< Updated upstream
    "forks": 1270,
    "orig": "Run 35B MoE models in ~2.5 GB of RAM. Weights stream from SSD; a trained router predicts loads a step ahead. Mac, iPhone, Android, Windows supported",
    "official": true
+=======
+   "forks": 1275,
+   "orig": "Run 35B MoE models in ~2.5 GB of RAM. Weights stream from SSD; a trained router predicts loads a step ahead. Mac, iPhone, Android, Windows supported",
+   "official": true
+  },
+  "anhao-ai-pose-gallery-zh": {
+   "repo": "anhao/ai-pose-gallery-zh",
+   "cat": "devtool",
+   "lang": "HTML",
+   "created": "2026-10-27",
+   "forks": 811,
+   "orig": "中文版 AI 姿势参考图库 · 1439 组 / 2878 张图片 / 完整汉化 · 零依赖静态画廊",
+   "official": false
+  },
+  "l0ng-ai-openidea": {
+   "repo": "l0ng-ai/openidea",
+   "cat": "devtool",
+   "lang": "TypeScript",
+   "created": "2026-10-21",
+   "forks": 100,
+   "orig": "The IDE you know, rebuilt in Rust. IntelliJ IDEA–style keymap, tool windows and search-everywhere in a fast native app: editor, code insight, debugger, Git, terminal, database and HTTP clients for 60+ languages.",
+   "official": false
+  },
+  "copilotkit-openbot": {
+   "repo": "CopilotKit/OpenBot",
+   "cat": "agent",
+   "lang": "TypeScript",
+   "created": "2026-08-17",
+   "forks": 1047,
+   "orig": "Open-source AI coworkers that each get a computer of their own: a browser, files and tools, with every action decided before it happens and recorded after. Bring any AG-UI agent.",
+   "official": true
+  },
+  "vincentwei1021-video-shotcraft": {
+   "repo": "Vincentwei1021/video-shotcraft",
+   "cat": "agent",
+   "lang": "TypeScript",
+   "created": "2026-07-19",
+   "forks": 1393,
+   "orig": "AI video skill for Claude Code & Codex — cinematic, editable product promos with Remotion: 124 shot recipe cards, 150 motion previews, beat sync, sound design, Motion Workbench & JianYing (CapCut CN) export.",
+   "official": false
+>>>>>>> Stashed changes
   }
  }
 }
