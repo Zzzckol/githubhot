@@ -18,9 +18,13 @@
  *
  * 只合不该丢的：
  *   - data.auto.js：今天刚抓的，整个覆盖（远端没有今天的数据，不存在覆盖别人）
+ *   - pipeline/boards/<今天>.json：今天的榜单，归档靠它知道今天有哪 60 名
  *   - zh.json：手写文案，按条目合并，本地优先、远端多出来的也留
  *   - history.json：星数历史，按「仓库 + 日期」合并，同一天用本地刚抓的
  *   - meta.json：项目元数据，只增不减
+ *
+ * 2026-10-30：本机 update.mjs 里原本有一份一模一样的实现在 realignThenRebuild()，
+ * 和这个是两份拷贝，改一边忘一边就会飘。现在本机也改成调这个脚本，只剩一份逻辑。
  */
 
 import fs from "node:fs";
@@ -70,6 +74,41 @@ if (fs.existsSync(savedAuto)) {
 } else {
   console.error("✗ 备份里没有 data.auto.js，今天的数据丢了，本次不该继续。");
   process.exit(1);
+}
+
+/* ---------- 1b. 今天的 board：归档靠它知道「今天有哪 60 名」 ---------- */
+/* board 是 fetch.mjs 顺手写进 pipeline/boards/ 的。备份里有就放回去；
+   万一抓取时没写成功，就按 data.auto.js 现补一份。
+   少了它 archive.mjs 会以为今天没数据，页面看着更新了、往回翻却没有今天。 */
+const TODAY = arg("today", "");
+if (TODAY) {
+  const boardRel = `pipeline/boards/${TODAY}.json`;
+  const boardPath = path.join(ROOT, boardRel);
+  const savedBoard = keepPath(boardRel);
+  if (fs.existsSync(savedBoard)) {
+    fs.mkdirSync(path.dirname(boardPath), { recursive: true });
+    fs.copyFileSync(savedBoard, boardPath);
+    report("board", `${TODAY} 已放回`);
+  } else if (!fs.existsSync(boardPath)) {
+    try {
+      const src = fs.readFileSync(path.join(ROOT, "assets/data.auto.js"), "utf8");
+      const m = src.match(/window\.GH_DATA_AUTO\s*=\s*(\{[\s\S]*\});/);
+      const data = m ? JSON.parse(m[1]) : null;
+      if (data && Array.isArray(data.items) && data.items.length) {
+        const repos = {};
+        for (const it of data.items) if (it.id && it.repo) repos[it.id] = it.repo;
+        fs.mkdirSync(path.dirname(boardPath), { recursive: true });
+        fs.writeFileSync(
+          boardPath,
+          JSON.stringify({ date: TODAY, ids: data.items.map((i) => i.id), repos }, null, 1),
+          "utf8",
+        );
+        report("board", `${TODAY} 备份里没有，已按抓取结果补一份`);
+      }
+    } catch (e) {
+      console.warn(`  board｜${TODAY} 补不出来，归档里可能少这一天`);
+    }
+  }
 }
 
 /* ---------- 2. zh.json：手写文案，按条目合并 ---------- */

@@ -328,20 +328,12 @@ function realignThenRebuild(git, today) {
       return null;
     }
   };
-  const put = (saved, rel) => {
-    if (!saved) return;
-    try {
-      fs.copyFileSync(saved, path.join(ROOT, rel));
-    } catch (e) {
-      /* 放不回去就靠重算兜底 */
-    }
-  };
 
   const savedAuto = grab("assets/data.auto.js");
-  const savedBoard = grab(`pipeline/boards/${today}.json`);
-  const savedZh = grab("pipeline/zh.json");
-  const savedHistory = grab("pipeline/history.json");
-  const savedMeta = grab("pipeline/meta.json");
+  grab(`pipeline/boards/${today}.json`);
+  grab("pipeline/zh.json");
+  grab("pipeline/history.json");
+  grab("pipeline/meta.json");
   if (!savedAuto) {
     console.error("✗ 本地今天的数据文件不存在，本次不推送。");
     return false;
@@ -355,85 +347,15 @@ function realignThenRebuild(git, today) {
   }
   console.log("已对齐远端。");
 
-  // 抓取结果和今天的 board 直接放回：这是今天新算出来的，远端没有，不存在冲突
-  put(savedAuto, "assets/data.auto.js");
-  put(savedBoard, `pipeline/boards/${today}.json`);
-
-  /* board 是 fetch.mjs 顺手写的，正常都有。可万一它没写成功（或这次跳过了抓取），
-     归档就只会按「有 board 的天」来拼，今天这一天会悄悄漏掉——页面看着更新了，
-     往回翻却没有今天。所以 board 缺了就按抓取结果现补一份。 */
-  const boardPath = path.join(ROOT, "pipeline/boards", `${today}.json`);
-  if (!fs.existsSync(boardPath)) {
-    try {
-      const src = fs.readFileSync(path.join(ROOT, "assets/data.auto.js"), "utf8");
-      const m = src.match(/window\.GH_DATA_AUTO\s*=\s*(\{[\s\S]*\});/);
-      const data = m ? JSON.parse(m[1]) : null;
-      if (data && Array.isArray(data.items) && data.items.length) {
-        const repos = {};
-        for (const it of data.items) if (it.id && it.repo) repos[it.id] = it.repo;
-        fs.mkdirSync(path.dirname(boardPath), { recursive: true });
-        fs.writeFileSync(
-          boardPath,
-          JSON.stringify({ date: today, ids: data.items.map((i) => i.id), repos }, null, 1),
-          "utf8",
-        );
-        console.log(`今天（${today}）的 board 缺了，已按抓取结果补一份。`);
-      }
-    } catch (e) {
-      console.warn("（今天的 board 补不出来，归档里可能少这一天）");
-    }
+  /* 合回原料交给 pipeline/merge-keep.mjs —— 和 GitHub Actions 用的是同一份脚本。
+     原来这里内联了一整套「按条目合并」，和 merge-keep.mjs 是两份拷贝，
+     改一边忘一边就会飘（比如 board 缺失时的兜底逻辑只在一边有）。
+     合成一份之后，本地和 CI 的行为保证一致。 */
+  console.log("把今天抓的原料合回来…");
+  if (!run(["pipeline/merge-keep.mjs", "--keep", keep, "--today", today])) {
+    console.error("✗ 合回原料失败，本次不推送（宁可晚一天也不能推坏文件）。");
+    return false;
   }
-
-  // 手写文案以本地为准，但远端若多出条目也不能丢，按条目合并
-  mergeJsonFile(savedZh, path.join(ROOT, "pipeline/zh.json"), (remote, local) => {
-    const out = { ...remote };
-    out.items = { ...(remote.items || {}) };
-    for (const [id, v] of Object.entries(local.items || {})) {
-      if (!out.items[id]) out.items[id] = v;
-    }
-    // 本地的条目比远端全，本地有的就以本地为准
-    for (const [id, v] of Object.entries(out.items)) {
-      if (local.items && local.items[id]) out.items[id] = { ...v, ...local.items[id] };
-    }
-    if (local._note) out._note = local._note;
-    out._updated = local._updated || out._updated;
-    return out;
-  });
-
-  // 星数历史：按「仓库 + 日期」合并，同一天本地是刚抓的，用本地的
-  mergeJsonFile(savedHistory, path.join(ROOT, "pipeline/history.json"), (remote, local) => {
-    const out = { version: remote.version || local.version, repos: {} };
-    const repoSet = new Set([...Object.keys(remote.repos || {}), ...Object.keys(local.repos || {})]);
-    for (const repo of repoSet) {
-      const byDay = new Map();
-      for (const r of (remote.repos || {})[repo] || []) if (r && r.d) byDay.set(r.d, r);
-      for (const r of (local.repos || {})[repo] || []) if (r && r.d) byDay.set(r.d, r);
-      out.repos[repo] = [...byDay.values()].sort((a, b) => (a.d < b.d ? -1 : 1));
-    }
-    return out;
-  });
-
-  // 项目元数据：只增不减，远端有的保留，本机多出来的字段补上
-  mergeJsonFile(savedMeta, path.join(ROOT, "pipeline/meta.json"), (remote, local) => {
-    const out = { ...remote };
-    out.items = { ...(remote.items || {}) };
-    for (const [id, v] of Object.entries(local.items || {})) {
-      if (!out.items[id]) {
-        out.items[id] = v;
-        continue;
-      }
-      const merged = { ...out.items[id] };
-      for (const [k, val] of Object.entries(v || {})) {
-        if (val !== undefined && val !== null && val !== "" && (merged[k] === undefined || merged[k] === null || merged[k] === "")) {
-          merged[k] = val;
-        }
-      }
-      out.items[id] = merged;
-    }
-    out._updated = local._updated || out._updated;
-    out._note = remote._note || local._note;
-    return out;
-  });
 
   // 归档和版本号必须重算：归档要按「远端已有的历史 + 今天的抓取」重新拼一遍
   console.log("按远端的底子重新生成归档和版本号…");
@@ -446,24 +368,6 @@ function realignThenRebuild(git, today) {
     return false;
   }
   return true;
-}
-
-/** 读出两个 JSON，按 merge 函数合成后写回 target（任一侧坏了就保持不动） */
-function mergeJsonFile(savedPath, targetPath, merge) {
-  if (!savedPath || !fs.existsSync(savedPath)) return;
-  try {
-    const local = JSON.parse(fs.readFileSync(savedPath, "utf8"));
-    let remote = {};
-    try {
-      remote = JSON.parse(fs.readFileSync(targetPath, "utf8"));
-    } catch (e) {
-      remote = {};
-    }
-    const out = merge(remote, local);
-    fs.writeFileSync(targetPath, JSON.stringify(out, null, 1), "utf8");
-  } catch (e) {
-    console.warn(`（${path.basename(targetPath)} 合并时出问题，保持远端版本）`);
-  }
 }
 
 /** 写「今天已经同步过」标记，auto-daily.pyw 靠它决定要不要重试 */
