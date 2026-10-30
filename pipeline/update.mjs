@@ -148,9 +148,12 @@ function publish() {
     const boardRun = git(["cat-file", "-e", `origin/main:pipeline/boards/${today}.json`]);
     const dataRun = git(["show", `origin/main:assets/data.auto.js`]);
     const dataTxt = dataRun.status === 0 ? dataRun.stdout || "" : "";
-    const todayCn = `${today.slice(0, 4)}年${Number(today.slice(5, 7))}月${Number(today.slice(8, 10))}日`;
-    const remoteHasToday =
-      boardRun.status === 0 || dataTxt.includes(today) || dataTxt.includes(todayCn);
+    /* 只认「远端数据的快照日期就是今天」这一条，不能拿 includes(today) 凑数：
+       今天抓的数据本身 snapshot 就是今天，那个判断几乎永远为真，
+       一旦误判就会把本机刚抓的整份数据 reset 掉，等于当天白跑。 */
+    const snapMatch = dataTxt.match(/"snapshot":\s*"(\d{4}-\d{2}-\d{2})/);
+    const remoteSnap = snapMatch ? snapMatch[1] : "";
+    const remoteHasToday = boardRun.status === 0 || remoteSnap === today;
     if (remoteHasToday) {
       console.log(`远端已经有今天（${today}）的数据了（Actions 抢先跑完的），本地这份丢掉，直接对齐远端。`);
 
@@ -186,15 +189,15 @@ function publish() {
       console.log(`已对齐远端 main = ${(sha.stdout || "").trim().slice(0, 7)}`);
       // 不 return，继续往下走：zh.json 若真有新增就顺便提交推送，没有就走「没有新改动」
     } else {
-      console.log(`本地落后远端 ${behind} 个提交，先追上去…`);
-      const rebase = git(["rebase", "--autostash", "origin/main"]);
-      if (rebase.status !== 0) {
-        git(["rebase", "--abort"]);
-        console.error("✗ 追远端时冲突了，已回退。线上不会变，手动处理一下再重试。");
-        console.error((rebase.stderr || "").trim().split("\n").slice(-4).join("\n"));
-        return false;
-      }
-      console.log("已追平远端。");
+      /* 第二种情况：远端有本机没有的提交，但那些提交里没有今天的数据。
+         这时候千万不能 git rebase --autostash。
+         data.auto.js、history.json、meta.json 都是整份重写的生成物，两边各改一份文本
+         必然冲突，autostash 弹回工作区的就是带 <<<<<<< 的坏文件，而 rebase 退出码还是 0，
+         2026-10-30 那次坏文件上线就是这条路。
+         正确做法是「别合文本，重算生成物」：把本机今天抓的原料留一份，
+         对齐远端之后再按远端的底子重新生成，冲突就没有发生的余地。 */
+      console.log(`本地落后远端 ${behind} 个提交，远端没有今天的数据，改走「对齐后重算」：`);
+      if (!realignThenRebuild(git, today)) return false;
     }
 
     /* rebase --autostash 有个坑：rebase 本身能成功，但把之前暂存的内容弹回来时
@@ -254,6 +257,7 @@ function publish() {
   // 如果上次推送失败过，本地会领先远端若干提交，这里一并推上去
   const aheadRun = git(["rev-list", "--count", "origin/main..HEAD"]);
   const ahead = aheadRun.status === 0 ? parseInt(aheadRun.stdout.trim(), 10) || 0 : 0;
+  let pushed = false;
   if (ahead === 0) {
     console.log("远端已经是这个版本，没有要推的提交。");
   } else {
@@ -264,6 +268,7 @@ function publish() {
       console.error((push.stderr || "").trim().split("\n").slice(-4).join("\n"));
       return false;
     }
+    pushed = true;
   }
 
   // 核验：推完再问一次远端，确认远端 main 真的等于本地 HEAD
@@ -282,8 +287,183 @@ function publish() {
   console.log(`✓ 核验通过：远端 main = ${remoteSha.slice(0, 7)}`);
 
   markPushed();
-  console.log("已推送。GitHub Pages 大约 30~60 秒生效。");
+  if (pushed) {
+    console.log("已推送。GitHub Pages 大约 30~60 秒生效。");
+  } else {
+    console.log("远端本来就是这个版本，本地没有要推的东西。线上已经是最新。");
+  }
   return true;
+}
+
+/**
+ * 远端有本机没有的提交、但那边没有今天的数据时的处理：对齐远端，再按远端的底子重算。
+ *
+ * 为什么不能 git rebase --autostash：
+ * data.auto.js / data.archive.js / history.json / meta.json 都是整份重新生成的，
+ * 两边各有一份不同内容，做文本合并必然冲突。rebase 撞车后 autostash 把带
+ * <<<<<<< 的冲突结果弹回工作区，可退出码还是 0，后面 git add -A 就把坏文件推上线了
+ * （2026-10-30 事故）。
+ *
+ * 这里换个思路：今天的原料（抓取结果、今天的 board、手写文案）先单独存一份，
+ * 把工作区硬对齐到远端（生成物一律以远端为准），再把原料放回去，
+ * 然后重跑 archive + stamp 重新生成归档和版本号——全程不做文本合并，冲突无从发生。
+ */
+function realignThenRebuild(git, today) {
+  const keep = path.join(OUT, "rebase-keep");
+  try {
+    fs.mkdirSync(keep, { recursive: true });
+  } catch (e) {
+    console.error("✗ 建不了临时目录，本次不推送。");
+    return false;
+  }
+
+  const grab = (rel) => {
+    const src = path.join(ROOT, rel);
+    if (!fs.existsSync(src)) return null;
+    const dst = path.join(keep, rel.replace(/[\\/]/g, "__"));
+    try {
+      fs.copyFileSync(src, dst);
+      return dst;
+    } catch (e) {
+      return null;
+    }
+  };
+  const put = (saved, rel) => {
+    if (!saved) return;
+    try {
+      fs.copyFileSync(saved, path.join(ROOT, rel));
+    } catch (e) {
+      /* 放不回去就靠重算兜底 */
+    }
+  };
+
+  const savedAuto = grab("assets/data.auto.js");
+  const savedBoard = grab(`pipeline/boards/${today}.json`);
+  const savedZh = grab("pipeline/zh.json");
+  const savedHistory = grab("pipeline/history.json");
+  const savedMeta = grab("pipeline/meta.json");
+  if (!savedAuto) {
+    console.error("✗ 本地今天的数据文件不存在，本次不推送。");
+    return false;
+  }
+
+  const hard = git(["reset", "--hard", "origin/main"]);
+  if (hard.status !== 0) {
+    console.error("✗ 对齐远端失败，本次不推送。");
+    console.error((hard.stderr || "").trim().split("\n").slice(-3).join("\n"));
+    return false;
+  }
+  console.log("已对齐远端。");
+
+  // 抓取结果和今天的 board 直接放回：这是今天新算出来的，远端没有，不存在冲突
+  put(savedAuto, "assets/data.auto.js");
+  put(savedBoard, `pipeline/boards/${today}.json`);
+
+  /* board 是 fetch.mjs 顺手写的，正常都有。可万一它没写成功（或这次跳过了抓取），
+     归档就只会按「有 board 的天」来拼，今天这一天会悄悄漏掉——页面看着更新了，
+     往回翻却没有今天。所以 board 缺了就按抓取结果现补一份。 */
+  const boardPath = path.join(ROOT, "pipeline/boards", `${today}.json`);
+  if (!fs.existsSync(boardPath)) {
+    try {
+      const src = fs.readFileSync(path.join(ROOT, "assets/data.auto.js"), "utf8");
+      const m = src.match(/window\.GH_DATA_AUTO\s*=\s*(\{[\s\S]*\});/);
+      const data = m ? JSON.parse(m[1]) : null;
+      if (data && Array.isArray(data.items) && data.items.length) {
+        const repos = {};
+        for (const it of data.items) if (it.id && it.repo) repos[it.id] = it.repo;
+        fs.mkdirSync(path.dirname(boardPath), { recursive: true });
+        fs.writeFileSync(
+          boardPath,
+          JSON.stringify({ date: today, ids: data.items.map((i) => i.id), repos }, null, 1),
+          "utf8",
+        );
+        console.log(`今天（${today}）的 board 缺了，已按抓取结果补一份。`);
+      }
+    } catch (e) {
+      console.warn("（今天的 board 补不出来，归档里可能少这一天）");
+    }
+  }
+
+  // 手写文案以本地为准，但远端若多出条目也不能丢，按条目合并
+  mergeJsonFile(savedZh, path.join(ROOT, "pipeline/zh.json"), (remote, local) => {
+    const out = { ...remote };
+    out.items = { ...(remote.items || {}) };
+    for (const [id, v] of Object.entries(local.items || {})) {
+      if (!out.items[id]) out.items[id] = v;
+    }
+    // 本地的条目比远端全，本地有的就以本地为准
+    for (const [id, v] of Object.entries(out.items)) {
+      if (local.items && local.items[id]) out.items[id] = { ...v, ...local.items[id] };
+    }
+    if (local._note) out._note = local._note;
+    out._updated = local._updated || out._updated;
+    return out;
+  });
+
+  // 星数历史：按「仓库 + 日期」合并，同一天本地是刚抓的，用本地的
+  mergeJsonFile(savedHistory, path.join(ROOT, "pipeline/history.json"), (remote, local) => {
+    const out = { version: remote.version || local.version, repos: {} };
+    const repoSet = new Set([...Object.keys(remote.repos || {}), ...Object.keys(local.repos || {})]);
+    for (const repo of repoSet) {
+      const byDay = new Map();
+      for (const r of (remote.repos || {})[repo] || []) if (r && r.d) byDay.set(r.d, r);
+      for (const r of (local.repos || {})[repo] || []) if (r && r.d) byDay.set(r.d, r);
+      out.repos[repo] = [...byDay.values()].sort((a, b) => (a.d < b.d ? -1 : 1));
+    }
+    return out;
+  });
+
+  // 项目元数据：只增不减，远端有的保留，本机多出来的字段补上
+  mergeJsonFile(savedMeta, path.join(ROOT, "pipeline/meta.json"), (remote, local) => {
+    const out = { ...remote };
+    out.items = { ...(remote.items || {}) };
+    for (const [id, v] of Object.entries(local.items || {})) {
+      if (!out.items[id]) {
+        out.items[id] = v;
+        continue;
+      }
+      const merged = { ...out.items[id] };
+      for (const [k, val] of Object.entries(v || {})) {
+        if (val !== undefined && val !== null && val !== "" && (merged[k] === undefined || merged[k] === null || merged[k] === "")) {
+          merged[k] = val;
+        }
+      }
+      out.items[id] = merged;
+    }
+    out._updated = local._updated || out._updated;
+    out._note = remote._note || local._note;
+    return out;
+  });
+
+  // 归档和版本号必须重算：归档要按「远端已有的历史 + 今天的抓取」重新拼一遍
+  console.log("按远端的底子重新生成归档和版本号…");
+  if (!run(["pipeline/archive.mjs"])) {
+    console.error("✗ 重新生成归档失败，本次不推送（宁可晚一天也不能推坏文件）。");
+    return false;
+  }
+  if (!run(["pipeline/stamp.mjs"])) {
+    console.error("✗ 刷新版本号失败，本次不推送。");
+    return false;
+  }
+  return true;
+}
+
+/** 读出两个 JSON，按 merge 函数合成后写回 target（任一侧坏了就保持不动） */
+function mergeJsonFile(savedPath, targetPath, merge) {
+  if (!savedPath || !fs.existsSync(savedPath)) return;
+  try {
+    const local = JSON.parse(fs.readFileSync(savedPath, "utf8"));
+    let remote = {};
+    try {
+      remote = JSON.parse(fs.readFileSync(targetPath, "utf8"));
+    } catch (e) {
+      remote = {};
+    }
+    const out = merge(remote, local);
+    fs.writeFileSync(targetPath, JSON.stringify(out, null, 1), "utf8");
+  } catch (e) {
+    console.warn(`（${path.basename(targetPath)} 合并时出问题，保持远端版本）`);
+  }
 }
 
 /** 写「今天已经同步过」标记，auto-daily.pyw 靠它决定要不要重试 */

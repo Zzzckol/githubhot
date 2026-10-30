@@ -44,14 +44,16 @@
    "desc": "开源的编码 agent，在终端里跑。",
    "why": "Claude Code 的开源对手里最有存在感的一个，21.9 万星。它的意义是给了「不想被单一厂商绑住」的人一个选择，而且社区插件生态长得很快。"
   },
-  "DietrichGebert-ponytail": {
+  "dietrichgebert-ponytail": {
    "repo": "DietrichGebert/ponytail",
    "cat": "agent",
    "lang": "JavaScript",
    "forks": 9371,
    "orig": "Makes your AI agent think like the laziest senior dev in the room. The best code is the code you never wrote.",
    "desc": "给 AI 编程助手装一个「屋里最懒的资深工程师」人设，专门逼它少写代码。",
-   "why": "主张是「最好的代码是你没写的代码」。听着像玩梗，但 17 万星说明戳到了真痛点——AI 最大的毛病不是不会写，是过度设计、加一堆没人要的抽象层。让它先懒得写，出来的东西反而干净。"
+   "why": "主张是「最好的代码是你没写的代码」。听着像玩梗，但 17 万星说明戳到了真痛点——AI 最大的毛病不是不会写，是过度设计、加一堆没人要的抽象层。让它先懒得写，出来的东西反而干净。",
+   "created": "2026-06-12",
+   "official": false
   },
   "cloudflare-security-audit-skill": {
    "repo": "cloudflare/security-audit-skill",
@@ -64,16 +66,18 @@
    "why": "今天涨 2049 星，总星四万。它不让你信模型的判断——每条发现都要能独立复现。安全审计最怕 AI 一本正经报假漏洞，这个设计正好卡在那。",
    "official": true
   },
-  "Graphify-Labs-graphify": {
+  "graphify-labs-graphify": {
    "repo": "Graphify-Labs/graphify",
    "cat": "agent",
    "lang": "Python",
    "forks": 12664,
    "orig": "Turn any codebase, with its docs, SQL schemas, configs, and PDFs, into a queryable knowledge graph. Local deterministic AST parsing, every edge explained, no vector store.",
    "desc": "把整个代码库连同文档、SQL、配置、PDF 变成一张能查询的知识图谱。",
-   "why": "它不用向量库，走本地 AST 解析，每条边都能讲清楚为什么连上——这点对「AI 到底懂不懂我的代码」很关键。RAG 那种模糊检索你没法追问，这个能指着一条边告诉你来路。"
+   "why": "它不用向量库，走本地 AST 解析，每条边都能讲清楚为什么连上——这点对「AI 到底懂不懂我的代码」很关键。RAG 那种模糊检索你没法追问，这个能指着一条边告诉你来路。",
+   "created": "2026-04-03",
+   "official": true
   },
-  "Comfy-Org-ComfyUI": {
+  "comfy-org-comfyui": {
    "repo": "Comfy-Org/ComfyUI",
    "cat": "model",
    "lang": "Python",
@@ -93,7 +97,7 @@
    "why": "三万九千星，号称每月 74 亿 token 免费额度。这类「免费聚合」永远伴随风险：服务商随时封、key 可能被记录，作者自己也写了仅限个人试验。省钱可以看，别接生产。",
    "official": false
   },
-  "shiyu-coder-Kronos": {
+  "shiyu-coder-kronos": {
    "repo": "shiyu-coder/Kronos",
    "cat": "model",
    "lang": "Python",
@@ -140,14 +144,16 @@
    "why": "官方文档偏工具手册，这份是从「我该怎么用」的角度组织的。新手想少走弯路可以先看它，比在群里问半天快得多。",
    "official": false
   },
-  "Panniantong-Agent-Reach": {
+  "panniantong-agent-reach": {
    "repo": "Panniantong/Agent-Reach",
    "cat": "agent",
    "lang": "Python",
    "forks": 8874,
    "orig": "Give your AI agent eyes to see the entire internet. Read & search Twitter, Reddit, YouTube, GitHub, Bilibili, XiaoHongShu — one CLI, zero API fees.",
    "desc": "给 AI agent 一双能看全网的眼睛——推特、Reddit、YouTube、GitHub、B站、小红书都能读能搜，一个 CLI，不收接口费。",
-   "why": "中国开发者做的，痛点很实在：想让 agent 去查社交媒体，光申请接口和付费用就能劝退。它绕开官方接口直接抓，好用，但封号和法律风险自己掂量。"
+   "why": "中国开发者做的，痛点很实在：想让 agent 去查社交媒体，光申请接口和付费用就能劝退。它绕开官方接口直接抓，好用，但封号和法律风险自己掂量。",
+   "created": "2026-02-24",
+   "official": false
   },
   "usestrix-strix": {
    "repo": "usestrix/strix",
@@ -230,7 +236,7 @@
    "desc": "实时全球情报看板：AI 新闻聚合 + 地缘监控 + 基础设施追踪，全部塞在一个界面里。",
    "why": "形态很有意思，是「信息密度极高的一屏」。你在做聚合站的话，它的界面组织方式值得扒开看看——尤其怎么在一屏里分层装下完全不同类型的信息还不乱。"
   },
-  "rmyndharis-OpenWA": {
+  "rmyndharis-openwa": {
    "repo": "rmyndharis/OpenWA",
    "cat": "devtool",
    "lang": "TypeScript",
@@ -248,7 +254,7 @@
    "desc": "开源的 Salesforce 替代品，为 AI 重新设计。",
    "why": "CRM 这个品类被 SaaS 锁了很多年。twenty 是目前开源里做得最像样的一个，而且不是「照抄一遍」，是真的按 AI 时代的交互重新想过。"
   },
-  "k2-fsa-OmniVoice": {
+  "k2-fsa-omnivoice": {
    "repo": "k2-fsa/OmniVoice",
    "cat": "model",
    "lang": "Python",
@@ -257,7 +263,7 @@
    "desc": "支持 600 多种语言的语音克隆 TTS。",
    "why": "跟 VoiceStudio 同类，但更偏研究向，出自 k2-fsa（icefall 那个团队）。要做多语言语音的，这两个对比着看最省事——一个偏产品，一个偏模型本身。"
   },
-  "NationalSecurityAgency-ghidra": {
+  "nationalsecurityagency-ghidra": {
    "repo": "NationalSecurityAgency/ghidra",
    "cat": "security",
    "lang": "Java",
@@ -286,7 +292,7 @@
    "desc": "Anthropic 官方维护的 Claude Code 插件目录，挑过的。",
    "why": "插件生态现在很乱，官方出来做一层筛选有价值。想知道「哪些插件真能用」，从这儿开始比在 GitHub 上瞎搜靠谱。"
   },
-  "K-Dense-AI-scientific-agent-skills": {
+  "k-dense-ai-scientific-agent-skills": {
    "repo": "K-Dense-AI/scientific-agent-skills",
    "cat": "agent",
    "lang": "Python",
@@ -295,14 +301,16 @@
    "desc": "177 个科学领域的 Agent 技能加 100 多个科学数据库接口，目标是让通用 agent 变成「AI 科学家」。",
    "why": "做垂直技能库的思路。科学领域门槛高、数据结构复杂，把这层封装好是真功夫。它也是「每个行业都该有一套自己的技能库」这句话最好的样本。"
   },
-  "HKUDS-CLI-Anything": {
+  "hkuds-cli-anything": {
    "repo": "HKUDS/CLI-Anything",
    "cat": "agent",
    "lang": "Python",
    "forks": 5054,
    "orig": "Make all software agent-native.",
    "desc": "让所有软件都变成「agent 原生」——把命令行工具包装成 agent 能直接调的东西。",
-   "why": "港大做的。agent 落地最大的摩擦是「现有软件不配合它」，这个项目从命令行这层下手，比等所有软件重写一遍现实得多。"
+   "why": "港大做的。agent 落地最大的摩擦是「现有软件不配合它」，这个项目从命令行这层下手，比等所有软件重写一遍现实得多。",
+   "created": "2026-03-08",
+   "official": true
   },
   "ruvnet-ruflo": {
    "repo": "ruvnet/ruflo",
@@ -433,17 +441,6 @@
    "why": "十天一千六百星。技术上比模拟器彻底——重写 NSO、接管系统调用、把图形翻成 Metal，等于给游戏换了个壳。能不能大规模用另说，路子很少见。",
    "official": false
   },
-  "dietrichgebert-ponytail": {
-   "repo": "DietrichGebert/ponytail",
-   "cat": "agent",
-   "lang": "JavaScript",
-   "created": "2026-06-12",
-   "forks": 9882,
-   "orig": "Makes your AI agent think like the laziest senior dev in the room. The best code is the code you never wrote.",
-   "desc": "给 AI 编码助手装一个「很懒的资深工程师」人格：能不写就不写。",
-   "why": "13 万星说明一件事——AI 最大的毛病不是不会写，是过度设计、加一堆没人要的抽象层。它主张「最好的代码是没写的代码」，比任何提示词技巧都实在。",
-   "official": false
-  },
   "deepseek-ai-deepinfer": {
    "repo": "deepseek-ai/DeepInfer",
    "cat": "model",
@@ -476,17 +473,6 @@
    "desc": "一位工程师直接从自己 .agents 目录里掏出来的编码技能集。",
    "why": "30 万星，跟 DeepSeek Harness 一个量级。价值在「真实在用」四个字——不是为开源整理的展示品，是他自己天天跑的那一套。",
    "official": false
-  },
-  "graphify-labs-graphify": {
-   "repo": "Graphify-Labs/graphify",
-   "cat": "agent",
-   "lang": "Python",
-   "created": "2026-04-03",
-   "forks": 13224,
-   "orig": "Turn any codebase, with its docs, SQL schemas, configs, and PDFs, into a queryable knowledge graph. A /graphify skill for Claude Code, Cursor, Codex, and Gemini CLI: local deterministic AST parsing, every edge explained, no vector store.",
-   "desc": "把一个代码库连同文档、SQL 结构、配置文件、PDF 一起转成可查询的知识图谱，不用向量库。",
-   "why": "13 万星。它明确说不用向量库、用确定性 AST 解析，每条边都能解释来源——这正好戳在 RAG 被骂得最狠的地方：不知道它为什么这么答。",
-   "official": true
   },
   "affaan-m-ecc": {
    "repo": "affaan-m/ECC",
@@ -617,17 +603,6 @@
    "orig": "数学（小学到高中）、英语（三年级到高中）、初中物理的知识图谱：1644 个知识点、2403 条先修边、6723 道题，对齐课标，附自适应前置诊断。",
    "desc": "中小学数学和英语的知识图谱加前置诊断，1503 个知识点、6159 道题，对齐人教版课标。",
    "why": "两千星，上线四天。少见的把国内教材结构真正拆成数据的中文项目。做教育产品、做自适应练习的，这份图谱能省几个月手工活。",
-   "official": false
-  },
-  "panniantong-agent-reach": {
-   "repo": "Panniantong/Agent-Reach",
-   "cat": "content",
-   "lang": "Python",
-   "created": "2026-02-24",
-   "forks": 9430,
-   "orig": "Give your AI agent eyes to see the entire internet. Read & search Twitter, Reddit, YouTube, GitHub, Bilibili, XiaoHongShu — one CLI, zero API fees.",
-   "desc": "给 AI agent 装一双看全网的眼睛：一个命令行读推特、Reddit、YouTube、GitHub、B 站、小红书，不收 API 费。",
-   "why": "十万星。价值在于绕开了「每个平台都得申请 API」这道墙。做内容聚合和舆情的最该看这个——顺便说，我做这个站时最想要的就是这类东西。",
    "official": false
   },
   "storytold-photocraft": {
@@ -926,17 +901,6 @@
    "desc": "给设计师和工程师的 agent 技能集，作者是 Sonner、Vaul 这些动效组件的作者。",
    "why": "四万八千星，纯 Markdown。作者做的组件很多人在用，所以他写的规则来自真实项目的手感，不是总结文章。",
    "official": false
-  },
-  "hkuds-cli-anything": {
-   "repo": "HKUDS/CLI-Anything",
-   "cat": "agent",
-   "lang": "Python",
-   "created": "2026-03-08",
-   "forks": 5132,
-   "orig": "\"CLI-Anything: Making ALL Software Agent-Native\" -- CLI-Hub: https://clianything.cc/",
-   "desc": "让所有软件都能被 agent 操作：把各家的命令行能力收成一个统一入口，接给 AI 用。",
-   "why": "五万六千星，清华的实验室做的。它的判断是「不用等厂商做 MCP，先把 CLI 这层统一起来」——比逐个适配现实得多。",
-   "official": true
   },
   "addyosmani-agent-skills": {
    "repo": "addyosmani/agent-skills",
@@ -1396,6 +1360,8 @@
    "created": "2026-09-08",
    "forks": 1270,
    "orig": "Run 35B MoE models in ~2.5 GB of RAM. Weights stream from SSD; a trained router predicts loads a step ahead. Mac, iPhone, Android, Windows supported",
+   "desc": "把 350 亿参数的 MoE 模型压到 2.5GB 内存里跑：专家权重放在 SSD 上按需流式加载，再训练一个小网络提前一步预测会激活哪些专家。",
+   "why": "官方号，Apache-2.0。核心不是量化，是预测——用一个训练出来的预路由头提前算出下一步要用哪些专家，让 SSD 读取和计算重叠起来，解码速度最多提升 59%。峰值内存只受当前激活的专家集约束，与总参数量无关；代价是要能接受 SSD 随机读的延迟，而且目前 Python 侧只在 Apple 芯片的 MLX 后端跑得通。",
    "official": true
   },
   "aschmelyun-print-my-profile-pic": {

@@ -86,9 +86,13 @@ const meta = metaDoc.items || Object.create(null);
 /* 元数据只增不减：新值非空就覆盖，空了保留旧的 */
 function absorb(it) {
   if (!it || !it.id) return;
-  const cur = meta[it.id] || {};
+  /* id 一律按小写归档：抓取脚本生成的就是小写，可手写的老存档里是
+     「DietrichGebert-ponytail」这种原样大小写，两种写法会各占一个键，
+     同一个仓库在元数据里变成两条，还多占体积。统一压成小写。 */
+  const id = String(it.id).toLowerCase();
+  const cur = meta[id] || {};
   const pick = (k) => (it[k] !== undefined && it[k] !== null && it[k] !== "" ? it[k] : cur[k]);
-  meta[it.id] = {
+  meta[id] = {
     repo: pick("repo"),
     cat: pick("cat"),
     lang: pick("lang"),
@@ -111,7 +115,8 @@ let zhAdded = 0;
 if (fs.existsSync(ZH)) {
   try {
     const zh = JSON.parse(fs.readFileSync(ZH, "utf8")).items || {};
-    for (const [id, v] of Object.entries(zh)) {
+    for (const [rawId, v] of Object.entries(zh)) {
+      const id = rawId.toLowerCase();
       if (!meta[id]) {
         const repo = repoOfId[id];
         if (!repo) continue; // 连仓库名都不知道，补了也没法显示
@@ -195,13 +200,15 @@ const kept = days.slice(-KEEP_DAYS);
 
 /* 清掉空字段，省体积 */
 const metaOut = {};
-for (const [id, m] of Object.entries(meta)) {
+for (const [rawId, m] of Object.entries(meta)) {
   if (!m || !m.repo) continue;
-  const o = {};
+  const id = String(rawId).toLowerCase();
+  const dst = (metaOut[id] = metaOut[id] || {});
+  /* 老数据里同一仓库大小写两种写法各占一条，统一压成小写后合并，
+     先到的填值、后到的只补空位，谁也不覆盖谁。 */
   for (const k of ["repo", "cat", "lang", "created", "forks", "orig", "desc", "why", "official"]) {
-    if (m[k] !== undefined && m[k] !== null && m[k] !== "") o[k] = m[k];
+    if (dst[k] === undefined && m[k] !== undefined && m[k] !== null && m[k] !== "") dst[k] = m[k];
   }
-  metaOut[id] = o;
 }
 
 /* ---------- 输出 ---------- */
