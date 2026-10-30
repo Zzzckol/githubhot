@@ -138,15 +138,64 @@ function publish() {
   const behindRun = git(["rev-list", "--count", "HEAD..origin/main"]);
   const behind = behindRun.status === 0 ? parseInt(behindRun.stdout.trim(), 10) || 0 : 0;
   if (behind > 0) {
-    console.log(`本地落后远端 ${behind} 个提交，先追上去…`);
-    const rebase = git(["rebase", "--autostash", "origin/main"]);
-    if (rebase.status !== 0) {
-      git(["rebase", "--abort"]);
-      console.error("✗ 追远端时冲突了，已回退。线上不会变，手动处理一下再重试。");
-      console.error((rebase.stderr || "").trim().split("\n").slice(-4).join("\n"));
-      return false;
+    /* 关键判断：远端是不是已经有今天这份数据了？
+       Actions 的定时任务和本机日更会抢同一天，谁先推上去另一个就没必要再抓再推——
+       硬推就是两边都改同样的几个文件，必然冲突。2026-10-30 早上就是这么撞的：
+       01:33 Actions 推了 6ae2a75，08:36 本机也抓了一遍，rebase 撞车，坏文件上了线。
+       既然远端已经有了，本地这些改动直接丢掉、对齐远端，这才是最安全的做法。
+       两道判断取其一即可：boards 里有今天的文件，或 data.auto.js 里的快照是今天的。 */
+    const today = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+    const boardRun = git(["cat-file", "-e", `origin/main:pipeline/boards/${today}.json`]);
+    const dataRun = git(["show", `origin/main:assets/data.auto.js`]);
+    const dataTxt = dataRun.status === 0 ? dataRun.stdout || "" : "";
+    const todayCn = `${today.slice(0, 4)}年${Number(today.slice(5, 7))}月${Number(today.slice(8, 10))}日`;
+    const remoteHasToday =
+      boardRun.status === 0 || dataTxt.includes(today) || dataTxt.includes(todayCn);
+    if (remoteHasToday) {
+      console.log(`远端已经有今天（${today}）的数据了（Actions 抢先跑完的），本地这份丢掉，直接对齐远端。`);
+
+      /* 只有 zh.json 是手写的、丢了可惜，先留着，其余生成物一律以远端为准。
+         对齐完如果 zh.json 真多了条目，下面照常走提交推送，把文案补上去。 */
+      const zhPath = path.join(ROOT, "pipeline/zh.json");
+      let zhSaved = null;
+      try {
+        if (fs.existsSync(zhPath)) zhSaved = fs.readFileSync(zhPath, "utf8");
+      } catch (e) {
+        /* 读不出来就算了 */
+      }
+
+      const hard = git(["reset", "--hard", "origin/main"]);
+      if (hard.status !== 0) {
+        console.error("✗ 对齐远端失败，本次不推送。");
+        console.error((hard.stderr || "").trim().split("\n").slice(-3).join("\n"));
+        return false;
+      }
+
+      if (zhSaved) {
+        try {
+          if (fs.readFileSync(zhPath, "utf8") !== zhSaved) {
+            fs.writeFileSync(zhPath, zhSaved, "utf8");
+            console.log("本地 zh.json 比远端多，跟着这次一起补上去。");
+          }
+        } catch (e) {
+          /* 比对失败就当没差别 */
+        }
+      }
+
+      const sha = git(["rev-parse", "HEAD"]);
+      console.log(`已对齐远端 main = ${(sha.stdout || "").trim().slice(0, 7)}`);
+      // 不 return，继续往下走：zh.json 若真有新增就顺便提交推送，没有就走「没有新改动」
+    } else {
+      console.log(`本地落后远端 ${behind} 个提交，先追上去…`);
+      const rebase = git(["rebase", "--autostash", "origin/main"]);
+      if (rebase.status !== 0) {
+        git(["rebase", "--abort"]);
+        console.error("✗ 追远端时冲突了，已回退。线上不会变，手动处理一下再重试。");
+        console.error((rebase.stderr || "").trim().split("\n").slice(-4).join("\n"));
+        return false;
+      }
+      console.log("已追平远端。");
     }
-    console.log("已追平远端。");
 
     /* rebase --autostash 有个坑：rebase 本身能成功，但把之前暂存的内容弹回来时
        如果撞车，冲突标记就留在工作区里，而 rebase 的退出码依然是 0。

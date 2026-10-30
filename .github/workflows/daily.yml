@@ -88,9 +88,26 @@ jobs:
           git config user.email "githubhot-bot@users.noreply.github.com"
           # boards/ 必须提交，不然下次跑没有「昨天的榜」可比，名次变化和连续在榜全废
           git add assets/data.auto.js assets/data.archive.js pipeline/history.json pipeline/boards pipeline/meta.json index.html
-          if git diff --staged --quiet; then
-            echo "今天数据没变化，不提交"
-          else
+
+          # 2026-10-30 事故：本机日更也在这台机器之外跑，两边同一天都推就会撞。
+          # 本机那边已经改成「远端有今天就让路」，这里也补一道：先追远端再推。
+          if ! git diff --staged --quiet; then
             git commit -m "data: $(date -u -d '+8 hours' +%F)"
-            git push
+
+            if ! git pull --rebase --autostash origin main; then
+              git rebase --abort || true
+              echo "::error::追远端时冲突，放弃本次推送，避免把带冲突标记的文件推上线"
+              exit 1
+            fi
+
+            # 闸：文件名里出现冲突标记就直接失败，别上线
+            if git grep -n -E "^(<<<<<<< |>>>>>>> |^=======$)" -- . > /tmp/marks.txt 2>/dev/null; then
+              echo "::error::工作区有 git 冲突标记，放弃推送"
+              cat /tmp/marks.txt | head -20
+              exit 1
+            fi
+
+            git push origin HEAD:main
+          else
+            echo "今天数据没变化，不提交"
           fi
