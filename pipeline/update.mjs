@@ -10,6 +10,11 @@
  * 只 warn 一句就正常退出，于是每天抓完本地、线上永远是旧的，日志还写着「抓取成功」。
  * 现在改成：自己找 git（含 WorkBuddy 自带的 PortableGit）、找不到或推不上去就退出码 1，
  * 并且推送完回头核验远端 HEAD，核验不过也算失败。只有真推上去了才写「今日已同步」标记。
+ *
+ * 2026-10-30 再修：早上自动跑的时候，工作流 01:33 刚推过一次，本地 08:36 又抓了一遍，
+ * rebase --autostash 弹回暂存内容时撞车，冲突标记留在文件里，但 rebase 退出码是 0，
+ * 于是带 <<<<<<< 的 data.auto.js 和 index.html 被推上线，整站 JS 全挂、页面回落成 10-22 的存档。
+ * 现在提交前有两道闸：暂存区不许有冲突标记、几个 .js 必须能通过 node --check。
  */
 
 import { spawnSync } from "node:child_process";
@@ -142,6 +147,17 @@ function publish() {
       return false;
     }
     console.log("已追平远端。");
+
+    /* rebase --autostash 有个坑：rebase 本身能成功，但把之前暂存的内容弹回来时
+       如果撞车，冲突标记就留在工作区里，而 rebase 的退出码依然是 0。
+       2026-10-30 就是这么把带 <<<<<<< 的 data.auto.js 推上线的。所以这里单独查一遍。 */
+    const rebaseMarks = findConflictMarkers(git, { worktree: true });
+    if (rebaseMarks.length) {
+      console.error("✗ 追远端后工作区出现冲突标记（autostash 弹回时撞了），本次不推送。");
+      for (const line of rebaseMarks) console.error(`  ${line}`);
+      console.error("  处理方式：git checkout -- . 丢掉工作区改动，或手动解冲突后重跑。");
+      return false;
+    }
   }
 
   // 有改动就先提交
@@ -152,6 +168,28 @@ function publish() {
   }
   if (st.stdout.trim()) {
     git(["add", "-A"]);
+
+    /* 提交前两道闸，任何一道不过就整批放弃，宁可今天不更新也不能推坏文件上线 */
+
+    // 闸一：暂存内容里不能有 git 冲突标记
+    const marks = findConflictMarkers(git);
+    if (marks.length) {
+      git(["reset", "-q"]);
+      console.error("✗ 暂存的文件里有 git 冲突标记，已撤销暂存，本次不推送。");
+      for (const line of marks) console.error(`  ${line}`);
+      console.error("  大概率是 rebase 撞车留下的。手动看一眼再重跑。");
+      return false;
+    }
+
+    // 闸二：几个 .js 必须是能解析的，语法坏了一样白推
+    const bad = brokenScripts();
+    if (bad.length) {
+      git(["reset", "-q"]);
+      console.error("✗ 这些文件语法不通过，已撤销暂存，本次不推送：");
+      for (const line of bad) console.error(`  ${line}`);
+      return false;
+    }
+
     const day = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
     const commit = git(["commit", "-q", "-m", `data: ${day}`]);
     if (commit.status !== 0) {
@@ -212,6 +250,47 @@ function markPushed() {
   } catch (e) {
     console.warn("（标记文件没写成功，不影响本次推送）");
   }
+}
+
+/**
+ * 找出带 git 冲突标记的文件，返回「文件:行号:内容」列表（最多 10 条）。
+ *
+ * 默认查暂存区（--cached），传 { worktree: true } 就查工作区。
+ * 注意 --cached 必须排在所有非选项参数前面：放后面 git 会直接报
+ * fatal: option '--cached' must come before non-option arguments 并以 128 退出，
+ * 守卫就永远查不出东西，等于没写（2026-10-30 实测踩过一次）。
+ * 命中时 git grep 退出码 0，没命中是 1。
+ */
+function findConflictMarkers(git, opts = {}) {
+  const args = ["grep", "-n", "-E", "^(<<<<<<< |>>>>>>> |^=======$)"];
+  if (!opts.worktree) args.splice(1, 0, "--cached");
+  const r = git(args);
+  if (r.status !== 0 || !r.stdout) return [];
+  return r.stdout.split("\n").filter(Boolean).slice(0, 10);
+}
+
+/**
+ * 用 node --check 验几个脚本能不能解析。
+ * 冲突标记清干净了也可能因为别的原语法错，多一道保险。
+ */
+function brokenScripts() {
+  const files = [
+    "assets/data.auto.js",
+    "assets/data.archive.js",
+    "assets/data.js",
+    "assets/app.js",
+  ];
+  const bad = [];
+  for (const f of files) {
+    const full = path.join(ROOT, f);
+    if (!fs.existsSync(full)) continue;
+    const r = spawnSync(NODE, ["--check", full], { encoding: "utf8" });
+    if (r.status !== 0) {
+      const why = (r.stderr || "").trim().split("\n").find((l) => l.trim().startsWith("SyntaxError")) || "解析失败";
+      bad.push(`${f} —— ${why.trim()}`);
+    }
+  }
+  return bad;
 }
 
 /**
