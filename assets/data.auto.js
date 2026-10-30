@@ -1,7 +1,7 @@
 // 由 pipeline/fetch.mjs 生成、pipeline/enrich.mjs 补中文，请勿手改
-// 更新时间 2026-10-30T01:08:18.155Z
+// 更新时间 2026-10-30T01:46:23.971Z
 window.GH_DATA_AUTO = {
-  "snapshot": "2026-10-30T01:05:30.342Z",
+  "snapshot": "2026-10-30T01:46:23.857Z",
   "dateLabel": "2026年10月30日 星期五",
   "auto": true,
   "vs": "2026-10-29",
@@ -690,7 +690,7 @@ window.GH_DATA_AUTO = {
       "created": "2026-10-29",
       "ageDays": 1,
       "estimate": 495,
-      "isNew": true,
+      "isNew": false,
       "official": false,
       "zh": false,
       "topics": []

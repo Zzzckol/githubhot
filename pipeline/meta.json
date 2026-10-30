@@ -48,11 +48,11 @@
    "repo": "DietrichGebert/ponytail",
    "cat": "agent",
    "lang": "JavaScript",
-   "forks": 9371,
-   "orig": "Makes your AI agent think like the laziest senior dev in the room. The best code is the code you never wrote.",
-   "desc": "给 AI 编程助手装一个「屋里最懒的资深工程师」人设，专门逼它少写代码。",
-   "why": "主张是「最好的代码是你没写的代码」。听着像玩梗，但 17 万星说明戳到了真痛点——AI 最大的毛病不是不会写，是过度设计、加一堆没人要的抽象层。让它先懒得写，出来的东西反而干净。",
    "created": "2026-06-12",
+   "forks": 9882,
+   "orig": "Makes your AI agent think like the laziest senior dev in the room. The best code is the code you never wrote.",
+   "desc": "给 AI 编码助手装一个「很懒的资深工程师」人格：能不写就不写。",
+   "why": "13 万星说明一件事——AI 最大的毛病不是不会写，是过度设计、加一堆没人要的抽象层。它主张「最好的代码是没写的代码」，比任何提示词技巧都实在。",
    "official": false
   },
   "cloudflare-security-audit-skill": {
@@ -70,11 +70,11 @@
    "repo": "Graphify-Labs/graphify",
    "cat": "agent",
    "lang": "Python",
-   "forks": 12664,
-   "orig": "Turn any codebase, with its docs, SQL schemas, configs, and PDFs, into a queryable knowledge graph. Local deterministic AST parsing, every edge explained, no vector store.",
-   "desc": "把整个代码库连同文档、SQL、配置、PDF 变成一张能查询的知识图谱。",
-   "why": "它不用向量库，走本地 AST 解析，每条边都能讲清楚为什么连上——这点对「AI 到底懂不懂我的代码」很关键。RAG 那种模糊检索你没法追问，这个能指着一条边告诉你来路。",
    "created": "2026-04-03",
+   "forks": 13224,
+   "orig": "Turn any codebase, with its docs, SQL schemas, configs, and PDFs, into a queryable knowledge graph. A /graphify skill for Claude Code, Cursor, Codex, and Gemini CLI: local deterministic AST parsing, every edge explained, no vector store.",
+   "desc": "把一个代码库连同文档、SQL 结构、配置文件、PDF 一起转成可查询的知识图谱，不用向量库。",
+   "why": "13 万星。它明确说不用向量库、用确定性 AST 解析，每条边都能解释来源——这正好戳在 RAG 被骂得最狠的地方：不知道它为什么这么答。",
    "official": true
   },
   "comfy-org-comfyui": {
@@ -146,13 +146,13 @@
   },
   "panniantong-agent-reach": {
    "repo": "Panniantong/Agent-Reach",
-   "cat": "agent",
+   "cat": "content",
    "lang": "Python",
-   "forks": 8874,
-   "orig": "Give your AI agent eyes to see the entire internet. Read & search Twitter, Reddit, YouTube, GitHub, Bilibili, XiaoHongShu — one CLI, zero API fees.",
-   "desc": "给 AI agent 一双能看全网的眼睛——推特、Reddit、YouTube、GitHub、B站、小红书都能读能搜，一个 CLI，不收接口费。",
-   "why": "中国开发者做的，痛点很实在：想让 agent 去查社交媒体，光申请接口和付费用就能劝退。它绕开官方接口直接抓，好用，但封号和法律风险自己掂量。",
    "created": "2026-02-24",
+   "forks": 9430,
+   "orig": "Give your AI agent eyes to see the entire internet. Read & search Twitter, Reddit, YouTube, GitHub, Bilibili, XiaoHongShu — one CLI, zero API fees.",
+   "desc": "给 AI agent 装一双看全网的眼睛：一个命令行读推特、Reddit、YouTube、GitHub、B 站、小红书，不收 API 费。",
+   "why": "十万星。价值在于绕开了「每个平台都得申请 API」这道墙。做内容聚合和舆情的最该看这个——顺便说，我做这个站时最想要的就是这类东西。",
    "official": false
   },
   "usestrix-strix": {
@@ -305,11 +305,11 @@
    "repo": "HKUDS/CLI-Anything",
    "cat": "agent",
    "lang": "Python",
+   "created": "2026-03-08",
    "forks": 5054,
    "orig": "Make all software agent-native.",
    "desc": "让所有软件都变成「agent 原生」——把命令行工具包装成 agent 能直接调的东西。",
    "why": "港大做的。agent 落地最大的摩擦是「现有软件不配合它」，这个项目从命令行这层下手，比等所有软件重写一遍现实得多。",
-   "created": "2026-03-08",
    "official": true
   },
   "ruvnet-ruflo": {
