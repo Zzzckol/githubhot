@@ -94,6 +94,11 @@ jobs:
           #     所以下面第一行必须钉住「任何一条命令失败就停」，且合并失败绝不推送。
           set -euo pipefail
 
+          # 北京今天的日期。必须在这里就先算好，不能等到「对齐后重算」那个分支里再算：
+          # 那个分支只有 BEHIND != 0 才进，而闸三（下面查 snapshot）在分支外面也要用它。
+          # 以前只在分支里赋值，于是 BEHIND == 0 时闸三引用未定义变量，set -u 直接退 1。
+          D=$(date -u -d '+8 hours' +%F)
+
           git config user.name "githubhot-bot"
           git config user.email "githubhot-bot@users.noreply.github.com"
 
@@ -101,7 +106,6 @@ jobs:
           BEHIND=$(git rev-list --count HEAD..origin/main)
           if [ "$BEHIND" != "0" ]; then
             echo "落后远端 $BEHIND 个提交，改走「对齐后重算」，不做文本合并"
-            D=$(date -u -d '+8 hours' +%F)
 
             # 今天刚抓的原料先存一份。文件名把 / 换成 __，供 merge-keep.mjs 认领
             rm -rf /tmp/keep
@@ -149,10 +153,19 @@ jobs:
             fi
           done
 
-          # 闸三：今天的日期真在快照里。写错日期或数据没跟上来时，这条能拦住「假装更新」
-          if ! grep -q "\"snapshot\": \"$D" assets/data.auto.js; then
-            echo "::error::data.auto.js 的快照日期不是今天（$D），放弃推送"
-            grep -o "\"snapshot\": \"[^\"]*\"" assets/data.auto.js || true
+          # 闸三：今天的日期真在快照里。写错日期或数据没跟上来时，这条能拦住「假装更新」。
+          # snapshot 存的是 UTC 时间戳（如 2026-11-13T00:34:51.179Z），而 $D 是北京日期。
+          # 直接 grep "$D" 只在 UTC 与北京同一天时才碰巧成立：抓取落在 UTC 16:00–24:00
+          # （北京次日 0–8 点）时两个日期差一天，这班会天天被自己拦下。
+          # 所以先把快照时间换成北京日期，再跟 $D 比。
+          SNAP_RAW=$(grep -o "\"snapshot\": \"[^\"]*\"" assets/data.auto.js | head -1 | sed 's/.*: "//; s/"$//')
+          if [ -z "$SNAP_RAW" ]; then
+            echo "::error::data.auto.js 里找不到 snapshot，数据不完整，放弃推送"
+            exit 1
+          fi
+          SNAP_BJ=$(date -u -d "$SNAP_RAW +8 hours" +%F)
+          if [ "$SNAP_BJ" != "$D" ]; then
+            echo "::error::data.auto.js 的快照（UTC $SNAP_RAW = 北京 $SNAP_BJ）不是今天（$D），放弃推送"
             exit 1
           fi
 

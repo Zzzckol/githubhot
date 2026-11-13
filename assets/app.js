@@ -403,7 +403,12 @@ function vsLabel() {
   const vs = DATA && DATA.vs;
   if (!vs) return "对比上一次";
   let extra = "";
-  const cur = DATA.snapshot ? String(DATA.snapshot).slice(0, 10) : null;
+  /* snapshot 是 UTC 时间戳，直接 slice(0,10) 拿到的是 UTC 日期。
+     榜单是按北京日期存的，跨 UTC 零点时这两者差一天，间隔天数就会算错，
+     所以先转成北京日期再跟 vs 比。 */
+  const cur = DATA.snapshot
+    ? new Date(new Date(DATA.snapshot).getTime() + 8 * 3600e3).toISOString().slice(0, 10)
+    : null;
   if (cur) {
     const gap = Math.round(
       (new Date(cur + "T00:00:00Z") - new Date(vs + "T00:00:00Z")) / 86400000

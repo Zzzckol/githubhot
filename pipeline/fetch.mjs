@@ -74,8 +74,15 @@ function saveBoard(date, items) {
 const TOKEN = process.env.GITHUB_TOKEN || "";
 
 const now = new Date();
-const todayISO = now.toISOString().slice(0, 10);
-const daysAgo = (n) => new Date(now.getTime() - n * DAY).toISOString().slice(0, 10);
+/* 「今天」一律按北京时间算，不能用 UTC 日期。
+   UTC 和北京差 8 小时，凌晨 0–8 点抓取时两者根本是两天：以前这里用 UTC 日期
+   给 board 命名、往 history 里记日子，而 Actions 和本机 update.mjs 都按北京日期
+   去找同一份文件，于是凌晨那班永远找不到「今天的存档」，每天白跑一遍，
+   最后还被推送前的快照校验拦下。统一成北京日期后，两边说的是同一天。 */
+const BJ_OFFSET = 8 * 3600e3;
+const bjDate = (ms) => new Date(ms + BJ_OFFSET).toISOString().slice(0, 10);
+const todayISO = bjDate(now.getTime());
+const daysAgo = (n) => bjDate(now.getTime() - n * DAY);
 
 /* ------------------------------------------------------------------ */
 /* 1. 候选池：三个搜索，覆盖「刚冒出来」「站稳了」「今年最热」          */
